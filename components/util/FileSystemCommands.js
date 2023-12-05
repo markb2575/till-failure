@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system';
-
+import workouts from '../../workouts.json';
 const dir = FileSystem.documentDirectory;
 
 const FileSystemCommands = {
@@ -11,6 +11,7 @@ const FileSystemCommands = {
         }
     },
     async createWorkoutFiles() {
+        console.log("workouts",workouts.workouts.Arms['Barbell Bicep Curls'])
         try {
             await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify({
                 "Dumbell Bicep Curls": [],
@@ -25,7 +26,7 @@ const FileSystemCommands = {
     async getWorkouts() {
         try {
             let workouts = await FileSystem.readAsStringAsync(dir + "workouts.json")
-            console.log("workouts", workouts)
+            // console.log("workouts", workouts)
         } catch (error) {
             console.error(error);
         }

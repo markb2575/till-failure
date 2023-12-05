@@ -14,7 +14,7 @@ export default function WorkoutScreen({ navigation }) {
         // let files = FS.readDirectoryAsync();
         // console.log(files)
         
-        if (FileSystemCommands.isProjectSetup()) {
+        if (!FileSystemCommands.isProjectSetup()) {
             console.log("project is setup, getting workouts")
             FileSystemCommands.getWorkouts()
         } else {
