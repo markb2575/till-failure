@@ -1,6 +1,49 @@
 {
-    "Dumbell Bicep Curls": [],
-    "Barbell Bicep Curls" : [],
-    "Hammer Curls": [],
-    "Preacher Curls": []
+    "workouts": {
+        "Arms": {
+            "Dumbell Bicep Curls": [
+                {
+                    "Weight":12,
+                    "Reps":12
+                },
+                {
+                    "Weight":12,
+                    "Reps":12
+                },
+                {
+                    "Weight":12,
+                    "Reps":12
+                }
+            ],
+            "Barbell Bicep Curls": [
+                {
+                    "Weight":12,
+                    "Reps":12
+                },
+                {
+                    "Weight":12,
+                    "Reps":12
+                },
+                {
+                    "Weight":12,
+                    "Reps":12
+                }
+            ],
+            "Hammer Curls": [],
+            "Preacher Curls": [],
+            "Spider Curls": []
+        },
+        "Chest": {},
+        "Back": {},
+        "Legs": {}
+    },
+    "programs": {
+        "PPL": {
+            "Push": [""],
+            "Pull": ["Barbell Bicep Curls"],
+            "Legs": [""],
+            "Rest": []
+        },
+        "Arnold": {}
+    }
 }
