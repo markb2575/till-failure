@@ -33,17 +33,29 @@
             "Preacher Curls": [],
             "Spider Curls": []
         },
-        "Chest": {},
-        "Back": {},
-        "Legs": {}
+        "Chest": {
+            "Barbell Bench Press": []
+        },
+        "Back": {
+            "Lat Pulldowns": []
+        },
+        "Legs": {
+            "Barbell Squats": []
+        }
     },
     "programs": {
         "PPL": {
-            "Push": [""],
-            "Pull": ["Barbell Bicep Curls"],
-            "Legs": [""],
-            "Rest": []
+            "Push":[{"name":"Barbell Bench Press","rep_range":"3-6", "sets":4}],
+            "Pull":[{"name":"Barbell Bicep Curls","rep_range":"8-12", "sets":4},{"name":"Dumbell Bicep Curls","rep_range":"8-12", "sets":4},{"name":"Hammer Curls","rep_range":"8-12", "sets":4}],
+            "Legs":[{"name":"Barbell Squats","rep_range":"3-6", "sets":4}],
+            "Rest":[]
         },
         "Arnold": {}
+    },
+    "state": {
+        "selectedProgram": null,
+        "currentDay": null,
+        "exercises": [] 
     }
+
 }
