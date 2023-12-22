@@ -6,7 +6,7 @@ import FileSystemCommands from "../../util/FileSystemCommands"
 import { setStatusBarBackgroundColor } from 'expo-status-bar';
 import { ListItem } from '@rneui/themed';
 
-export default function SelectWorkoutScreen({ navigation }) {
+export default function ProgressScreen({ navigation }) {
     const [data, setData] = useState(null);
     const isFocused = useIsFocused();
     useEffect(() => {
@@ -19,16 +19,7 @@ export default function SelectWorkoutScreen({ navigation }) {
     //get files to check if initial route name should be select workout or workout page
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white'}}>Select Workout</Text>
-            {data ? (
-                Object.keys(data.programs).map((l, i) => (
-                    <ListItem key={i} style={{}}>
-                        {/* <ListItem.Content> */}
-                        <Text>{l}</Text>
-                        {/* </ListItem.Content> */}
-                    </ListItem>
-                ))
-            ) : null}
+            <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white'}}>Progress</Text>
         </View>
     );
 }

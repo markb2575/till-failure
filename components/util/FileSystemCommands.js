@@ -1,6 +1,40 @@
 import * as FileSystem from 'expo-file-system';
 import workouts from '../../workouts.json';
 const dir = FileSystem.documentDirectory;
+const starterJSON = {
+    "workouts": {
+        "Arms": {
+            "Dumbell Bicep Curls": [],
+            "Barbell Bicep Curls": [],
+            "Hammer Curls": [],
+            "Preacher Curls": [],
+            "Spider Curls": []
+        },
+        "Chest": {
+            "Barbell Bench Press": []
+        },
+        "Back": {
+            "Lat Pulldowns": []
+        },
+        "Legs": {
+            "Barbell Squats": []
+        }
+    },
+    "programs": {
+        "PPL": [
+            {"day":"Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }]},
+            {"day":"Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Rest", "workouts": []}
+        ],
+        "Arnold": []
+    },
+    "state": {
+        "selectedProgram": null,
+        "currentDay": null,
+        "exercises": []
+    }
+}
 
 const FileSystemCommands = {
     async setupProject() {
@@ -22,66 +56,7 @@ const FileSystemCommands = {
         console.log("in createWorkoutFiles")
         // console.log("workouts",workouts.workouts.Arms['Barbell Bicep Curls'])
         try {
-            await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify({
-                "workouts": {
-                    "Arms": {
-                        "Dumbell Bicep Curls": [
-                            {
-                                "Weight": 12,
-                                "Reps": 12
-                            },
-                            {
-                                "Weight": 12,
-                                "Reps": 12
-                            },
-                            {
-                                "Weight": 12,
-                                "Reps": 12
-                            }
-                        ],
-                        "Barbell Bicep Curls": [
-                            {
-                                "Weight": 12,
-                                "Reps": 12
-                            },
-                            {
-                                "Weight": 12,
-                                "Reps": 12
-                            },
-                            {
-                                "Weight": 12,
-                                "Reps": 12
-                            }
-                        ],
-                        "Hammer Curls": [],
-                        "Preacher Curls": [],
-                        "Spider Curls": []
-                    },
-                    "Chest": {
-                        "Barbell Bench Press": []
-                    },
-                    "Back": {
-                        "Lat Pulldowns": []
-                    },
-                    "Legs": {
-                        "Barbell Squats": []
-                    }
-                },
-                "programs": {
-                    "PPL": {
-                        "Push": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }],
-                        "Pull": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }],
-                        "Legs": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }],
-                        "Rest": []
-                    },
-                    "Arnold": {}
-                },
-                "state": {
-                    "selectedProgram": null,
-                    "currentDay": null,
-                    "exercises": []
-                }
-            }));
+            await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(starterJSON));
         } catch (error) {
             console.error(error);
         }
