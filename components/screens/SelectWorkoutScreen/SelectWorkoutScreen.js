@@ -25,22 +25,18 @@ export default function SelectWorkoutScreen({ navigation }) {
     //get files to check if initial route name should be select workout or workout page
     return (
         <View>
-            <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal:70}}>Programs</Text>
-            <Card.Divider color='grey' style={{marginBottom: 0}} />
+            <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70, marginTop: 50, alignSelf: 'center'}}>Programs</Text>
             {data ? (
                 <View>
                     {Object.keys(data.programs).map((item, index) => (
-                        <View key={index}>
-                            <ListItem containerStyle={{ backgroundColor: 'transparent' }} onPress={() => handleProgramPress(item)}>
-                                <ListItem.Content>
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 5 }}>{item}</Text>
-                                    <Text style={{ fontSize: 15, color: 'grey', marginBottom: 5 }}>
-                                        {data.programs[item].map((program) => program.day).join(' | ')}
-                                    </Text>
-                                </ListItem.Content>
-                            </ListItem>
-                            <Card.Divider color='grey' style={{marginBottom:0}} />
-                        </View>
+                        <CustomCard screen={
+                            <View onTouchStart={() => {handleProgramPress(item)}} key={index}>
+                                <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center'}}>{item}</Text>
+                                <Text style={{ fontSize: 20, color: 'grey' , margin: 5 }}>
+                                    {data.programs[item].map((program) => program.day).join(' | ')}
+                                </Text>
+                            </View>
+                        } />
                     ))}
                 </View>
             ) : null}

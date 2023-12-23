@@ -19,6 +19,8 @@ export default function ProgressScreen({ navigation }) {
     }, [isFocused, setData])
     //get files to check if initial route name should be select workout or workout page
     return (
-        <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white'}}>Progress</Text>
+        <View>
+            <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70, marginTop: 50, alignSelf: 'center' }}>Progress</Text>
+        </View>
     );
 }

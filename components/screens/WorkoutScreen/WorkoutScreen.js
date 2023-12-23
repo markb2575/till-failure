@@ -35,8 +35,7 @@ export default function WorkoutScreen({ navigation }) {
             {selectedProgram ?
                 (
                     <View>
-                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70 }}>{currentDay} Day</Text>
-                        <Card.Divider color='grey' style={{marginBottom: 0}} />
+                        <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70 , marginTop: 50, alignSelf: 'center'}}>{currentDay} Day</Text>
                     </View>
                 )
                 : (<Button title="No Program Selected" onPress={() => navigation.navigate("Programs")} />)}
