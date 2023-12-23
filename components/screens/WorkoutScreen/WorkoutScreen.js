@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { View, Text, Button } from 'react-native';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ListItem, Card } from '@rneui/themed';
 
 export default function WorkoutScreen({ navigation }) {
     const [data, setData] = useState(null);
@@ -18,7 +19,6 @@ export default function WorkoutScreen({ navigation }) {
             FileSystemCommands.setupProject().then(res => {
                 setData(res)
                 setSelectedProgram(res.state.selectedProgram)
-                // res.state.selectedProgram = "PPL"
                 console.log(res.state.selectedProgram)
                 if (res.state.selectedProgram != null && res.state.currentDay == null) {
                     setCurrentDay(res.programs[res.state.selectedProgram][0].day)
@@ -31,8 +31,15 @@ export default function WorkoutScreen({ navigation }) {
     }, [isFocused, setData])
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            {selectedProgram?(<Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white'}}>{currentDay} Day</Text>):(<Button title="No Program Selected" onPress={() => navigation.navigate("Programs")}/>)}
+        <View>
+            {selectedProgram ?
+                (
+                    <View>
+                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70 }}>{currentDay} Day</Text>
+                        <Card.Divider color='grey' style={{marginBottom: 0}} />
+                    </View>
+                )
+                : (<Button title="No Program Selected" onPress={() => navigation.navigate("Programs")} />)}
         </View>
     );
 }

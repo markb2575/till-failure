@@ -4,7 +4,8 @@ import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import FileSystemCommands from "../../util/FileSystemCommands"
 import { setStatusBarBackgroundColor } from 'expo-status-bar';
-import { ListItem } from '@rneui/themed';
+import { ListItem, Card } from '@rneui/themed';
+import CustomCard from '../CustomCard';
 
 export default function ProgressScreen({ navigation }) {
     const [data, setData] = useState(null);
@@ -18,8 +19,6 @@ export default function ProgressScreen({ navigation }) {
     }, [isFocused, setData])
     //get files to check if initial route name should be select workout or workout page
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white'}}>Progress</Text>
-        </View>
+        <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white'}}>Progress</Text>
     );
 }

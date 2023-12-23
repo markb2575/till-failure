@@ -27,7 +27,15 @@ const starterJSON = {
             {"day":"Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
             {"day":"Rest", "workouts": []}
         ],
-        "Arnold": []
+        "Arnold": [
+            {"day":"Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }]},
+            {"day":"Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }]},
+            {"day":"Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Rest", "workouts": []}
+        ]
     },
     "state": {
         "selectedProgram": null,
@@ -39,24 +47,27 @@ const starterJSON = {
 const FileSystemCommands = {
     async setupProject() {
         if ((await FileSystem.getInfoAsync(dir + "workouts.json")).exists) {
+            // this.createWorkoutFiles() //uncomment to reset user data to starterJSON
             return this.getWorkouts()
         } else {
             this.createWorkoutFiles()
             return this.getWorkouts()
         }
-        // try {
-        //     // const info = await FileSystem.getInfoAsync(dir + "workouts.json")
-        //     // console.log(info)
-        //     // return info.exists
-        // } catch (error) {
-        //     console.error(error)
-        // }
     },
     async createWorkoutFiles() {
         console.log("in createWorkoutFiles")
         // console.log("workouts",workouts.workouts.Arms['Barbell Bicep Curls'])
         try {
             await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(starterJSON));
+        } catch (error) {
+            console.error(error);
+        }
+    },
+    async updateWorkoutFiles(data) {
+        console.log("in updateWorkoutFiles")
+        // console.log("workouts",workouts.workouts.Arms['Barbell Bicep Curls'])
+        try {
+            await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(data));
         } catch (error) {
             console.error(error);
         }

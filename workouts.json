@@ -44,13 +44,13 @@
         }
     },
     "programs": {
-        "PPL": {
-            "Push":[{"name":"Barbell Bench Press","rep_range":"3-6", "sets":4}],
-            "Pull":[{"name":"Barbell Bicep Curls","rep_range":"8-12", "sets":4},{"name":"Dumbell Bicep Curls","rep_range":"8-12", "sets":4},{"name":"Hammer Curls","rep_range":"8-12", "sets":4}],
-            "Legs":[{"name":"Barbell Squats","rep_range":"3-6", "sets":4}],
-            "Rest":[]
-        },
-        "Arnold": {}
+        "PPL": [
+            {"day":"Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }]},
+            {"day":"Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
+            {"day":"Rest", "workouts": []}
+        ],
+        "Arnold": []
     },
     "state": {
         "selectedProgram": null,
