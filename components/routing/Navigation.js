@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import { NavigationContainer, useIsFocused, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SelectWorkoutScreen, WorkoutScreen, ProgressScreen } from '../screens/screens';
+import { SelectWorkoutScreen, WorkoutScreen, ProgressScreen, CreateWorkoutScreen} from '../screens/screens';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -52,6 +52,7 @@ export default function Navigation() {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="HomeTabs" component={HomeTabs} />
                 <Stack.Screen name="Programs" component={SelectWorkoutScreen} />
+                <Stack.Screen name="CreateWorkout" component={CreateWorkoutScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

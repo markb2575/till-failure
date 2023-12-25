@@ -34,8 +34,8 @@ export default function SelectWorkoutScreen({ navigation }) {
                             </TouchableOpacity>
                         } />
                         <CustomCard marginLeft={0} screen={
-                            <TouchableOpacity onPress={() => console.log("hi")} style={{padding:10, marginHorizontal:16.25}}>
-                                <View style={{ flexDirection: 'row', alignSelf:'center'}}>
+                            <TouchableOpacity onPress={() => navigation.navigate("CreateWorkout")} style={{padding:10, marginHorizontal:16.25}}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent:'center'}}>
                                     <Image source={require('../../../assets/plus.png')} tintColor={'white'} style={{ width: 30, height: 30, margin: 5 }} />
                                     <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5 }}>Create</Text>
                                 </View>
