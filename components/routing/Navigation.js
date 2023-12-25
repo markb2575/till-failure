@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 const HomeTabs = () => {
     return (
         <Tab.Navigator
-            style={{ backgroundColor: '#101010' }}
+            style={{ backgroundColor: '#101010'}}
             initialRouteName='Workout'
             screenOptions={{
                 tabBarIconStyle: {
@@ -25,6 +25,11 @@ const HomeTabs = () => {
                     borderTopColor: 'grey',
                     borderRadius: 30,
                     margin: 25,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 2,
+                    elevation: 5,
                 },
                 tabBarInactiveTintColor: '#575757',
                 tabBarActiveTintColor: 'white',

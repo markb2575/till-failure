@@ -21,26 +21,34 @@ const starterJSON = {
         }
     },
     "programs": {
-        "PPL": [
-            {"day":"Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }]},
-            {"day":"Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }]},
-            {"day":"Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
-            {"day":"Rest", "workouts": []}
-        ],
-        "Arnold": [
-            {"day":"Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }]},
-            {"day":"Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }]},
-            {"day":"Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
-            {"day":"Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }]},
-            {"day":"Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }]},
-            {"day":"Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }]},
-            {"day":"Rest", "workouts": []}
-        ]
+        "PPL": {
+            "info": [
+                { "day": "Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 },{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 },{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 }] },
+                { "day": "Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
+                { "day": "Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
+                { "day": "Rest", "workouts": [] }],
+            "state": {
+                "currentDay": null,
+                "exercises": []
+            }
+        },
+        "Arnold": {
+            "info": [
+                { "day": "Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }] },
+                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
+                { "day": "Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
+                { "day": "Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }] },
+                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
+                { "day": "Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
+                { "day": "Rest", "workouts": [] }],
+            "state": {
+                "currentDay": null,
+                "exercises": []
+            }
+        }
     },
     "state": {
         "selectedProgram": null,
-        "currentDay": null,
-        "exercises": []
     }
 }
 
@@ -55,7 +63,7 @@ const FileSystemCommands = {
         }
     },
     async createWorkoutFiles() {
-        console.log("in createWorkoutFiles")
+        // console.log("in createWorkoutFiles")
         // console.log("workouts",workouts.workouts.Arms['Barbell Bicep Curls'])
         try {
             await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(starterJSON));
@@ -64,8 +72,8 @@ const FileSystemCommands = {
         }
     },
     async updateWorkoutFiles(data) {
-        console.log("in updateWorkoutFiles")
-        // console.log("workouts",workouts.workouts.Arms['Barbell Bicep Curls'])
+        // console.log("in updateWorkoutFiles")
+        // console.log("data",data)
         try {
             await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(data));
         } catch (error) {
@@ -73,23 +81,23 @@ const FileSystemCommands = {
         }
     },
     async getWorkouts() {
-        console.log("in getWorkouts")
+        // console.log("in getWorkouts")
         try {
             var workouts = await FileSystem.readAsStringAsync(dir + "workouts.json")
             workouts = JSON.parse(workouts)
-         
+            // console.log("workouts", workouts)
             // workouts = Object.entries(workouts);
-         
+
             return workouts
         } catch (error) {
             console.error(error);
         }
     },
     async deleteFiles() {
-        console.log("in deleteFiles", await FileSystem.readDirectoryAsync(dir), dir)
+        // console.log("in deleteFiles", await FileSystem.readDirectoryAsync(dir), dir)
         try {
             await FileSystem.deleteAsync(dir + "workouts.json")
-            console.log("after deleteFiles", await FileSystem.readDirectoryAsync(dir))
+            // console.log("after deleteFiles", await FileSystem.readDirectoryAsync(dir))
             return true
         } catch (error) {
             console.error(error);
