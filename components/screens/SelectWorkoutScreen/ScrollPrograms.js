@@ -21,7 +21,7 @@ export default function ScrollPrograms({ navigation, data }) {
             >
                 <View>
                     {Object.keys(data.programs).map((item, index) => (
-                        <CustomCard marginTop={0} marginLeft={0} marginRight={0} screen={
+                        <CustomCard key={index} marginTop={0} marginLeft={0} marginRight={0} screen={
                             <TouchableOpacity onPress={() => handleProgramPress(item)} style={{ padding: 10 }}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <Image source={require('../../../assets/workout_icon.png')} tintColor={'white'} style={{ width: 30, height: 15, alignSelf: 'center', margin: 5 }} />
