@@ -57,7 +57,7 @@ export default function WorkoutScreen({ navigation }) {
                     } />
                 ))}
                 </ScrollView>
-                <View style={{ marginHorizontal: 90, marginBottom: -10}}>
+                <View style={{ marginHorizontal: 90, marginTop: 10}}>
                     <CustomCard screen={<TouchableOpacity onPress={() => navigation.navigate("Programs")} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5 ,alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
                 </View>
             </View>
