@@ -47,7 +47,8 @@ export default function WorkoutScreen({ navigation }) {
         selectedProgram && exercises ? (
             <View style={{ flex: 1, justifyContent: 'space-between'}}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70, marginTop: 50, alignSelf: 'center' }}>{currentDay} Day</Text>
-                <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }}>
+                <ScrollView style={{ borderRadius: 10, marginHorizontal: 15}}>
+                <View style={{ marginBottom: -15 }}>
                 {exercises.map((exercise, index) => (
                     <CustomCard marginTop={0} marginLeft={0} marginRight={0} key={index} screen={
                         <TouchableOpacity style={{ padding: 10 }}>
@@ -56,6 +57,7 @@ export default function WorkoutScreen({ navigation }) {
                         </TouchableOpacity>
                     } />
                 ))}
+                </View>
                 </ScrollView>
                 <View style={{ marginHorizontal: 90, marginTop: 10}}>
                     <CustomCard screen={<TouchableOpacity onPress={() => navigation.navigate("Programs")} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5 ,alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
