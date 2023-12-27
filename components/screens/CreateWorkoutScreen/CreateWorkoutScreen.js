@@ -33,7 +33,7 @@ export default function CreateWorkoutScreen({ navigation }) {
             <CustomCard marginRight={0} marginTop={0} screen ={
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                                 <TextInput style={{fontSize:22, padding:20, marginHorizontal:16.25, color: 'white', margin: 5 }}
-                                    placeholder="Enter Workout Name"
+                                    placeholder="Enter Program Name"
                                     placeholderTextColor="#d3d3d3"
                                     value={inputValue}
                                     onChangeText={newText => setText(newText)}
