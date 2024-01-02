@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 // import * as FS from 'expo-file-system'
 import FileSystemCommands from "../../util/FileSystemCommands"
-import { useState } from 'react';
-import { View, Text, Button, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
+import { useState, useRef } from 'react';
+import { View, Text, Button, TouchableOpacity, ScrollView, TextInput, Image, Animated } from 'react-native';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ListItem, Card } from '@rneui/themed';
@@ -19,20 +19,26 @@ export default function WorkoutScreen({ navigation }) {
     const [currentWeight, setCurrentWeight] = useState("")
     const [currentReps, setCurrentReps] = useState("")
     const isFocused = useIsFocused();
+    const initialHeight = useRef(new Animated.Value(0)).current;
     useEffect(() => {
         if (isFocused) {
+
             FileSystemCommands.setupProject().then(res => {
                 setData(res)
+                console.log(res.programs[res.state.selectedProgram].state.currentDay)
                 if (res.state.selectedProgram === null) return
                 setSelectedProgram(res.state.selectedProgram)
                 if (res.programs[res.state.selectedProgram].state.currentDay === null) {
+                    console.log("here1")
                     setCurrentDay(res.programs[res.state.selectedProgram].info[0].day)
                     res.programs[res.state.selectedProgram].state.currentDay = res.programs[res.state.selectedProgram].info[0].day
                     FileSystemCommands.updateWorkoutFiles(res)
                     setData(res)
                 } else {
+                    console.log("here2", res.programs[res.state.selectedProgram].state.currentDay)
                     setCurrentDay(res.programs[res.state.selectedProgram].state.currentDay)
                 }
+                console.log(res.programs[res.state.selectedProgram].state.exercises)
                 if (res.programs[res.state.selectedProgram].state.exercises.length === 0 || res.programs[res.state.selectedProgram].state.exercises === null) {
                     res.programs[res.state.selectedProgram].info.forEach(info => {
                         if (info.day === res.programs[res.state.selectedProgram].state.currentDay) {
@@ -57,7 +63,7 @@ export default function WorkoutScreen({ navigation }) {
                 setExercises(res.programs[res.state.selectedProgram].state.exercises)
             })
         }
-    }, [isFocused, setData])
+    }, [isFocused, setData, currentDay])
 
     const handleOpenDropdown = (exercise, index) => {
         setActiveDropdown(activeDropdown === index ? null : index)
@@ -112,88 +118,118 @@ export default function WorkoutScreen({ navigation }) {
 
     }
 
+    const handleNextDay = () => {
+        const length = Object.values(data.programs[data.state.selectedProgram].info).length
+        const currentIndex = Object.values(data.programs[data.state.selectedProgram].info).findIndex(day => day.day.toLowerCase() === currentDay.toLowerCase())
+        if (currentIndex === length - 1) {
+            setCurrentDay(data.programs[data.state.selectedProgram].info[0].day)
+            data.programs[data.state.selectedProgram].state.currentDay = data.programs[data.state.selectedProgram].info[0].day
+            console.log(data.programs[data.state.selectedProgram].state)
+        } else {
+            const nextDay = data.programs[data.state.selectedProgram].info[Object.values(data.programs[data.state.selectedProgram].info).findIndex(day => day.day.toLowerCase() === currentDay.toLowerCase()) + 1].day
+            setCurrentDay(nextDay)
+            data.programs[data.state.selectedProgram].state.currentDay = nextDay
+            console.log(data.programs[data.state.selectedProgram].state)
+        }
+        data.programs[data.state.selectedProgram].state.exercises = []
+        FileSystemCommands.updateWorkoutFiles(data)
+
+        setExercises(null)
+    }
+
     return (
         selectedProgram && exercises ? (
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginTop: 50, alignSelf: 'center' }}>{currentDay}</Text>
 
-                <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }}>
-                    <View style={{ marginBottom: -15 }}>
-                        {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => (
-                            <View key={index}>
-                                <CustomCard styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: activeDropdown === index ? 0 : null }} screen={
-                                    <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1 }} onPress={() => handleOpenDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
-                                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5 }}>{exercise.name}</Text>
-                                        <Text style={{ fontSize: 20, color: 'grey', margin: 5 }}>{exercise.sets} sets of {exercise.rep_range} Reps</Text>
-                                    </TouchableOpacity>
-                                } />
-                                {activeDropdown === index ?
-                                    <CustomCard styles={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, marginTop: 0, marginBottom: null, backgroundColor: '#1e1e1e', marginRight: 8, marginLeft: 8, paddingTop: 15 }} screen={
-                                        <View style={{ paddingHorizontal: 16 }}>
-                                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 10 }}>Set {currentSet}</Text>
-                                            <View style={{ marginBottom: 16, marginHorizontal: 10 }}>
-                                                <Text style={{ fontSize: 18, color: 'white', marginBottom: 8 }}>Weight</Text>
-                                                <TextInput
-                                                    keyboardType='numeric'
-                                                    style={{
-                                                        height: 40,
-                                                        backgroundColor: 'white',
-                                                        borderWidth: 1,
-                                                        borderRadius: 8,
-                                                        paddingHorizontal: 12,
-                                                        fontSize: 16,
-                                                    }}
-                                                    value={String(currentWeight)}
-                                                    editable={true}
-                                                    onChangeText={(text) => handleTextChange(text, type = "Weight")}
-                                                />
-                                            </View>
-                                            <View style={{ marginBottom: 16, marginHorizontal: 10 }}>
-                                                <Text style={{ fontSize: 18, color: 'white', marginBottom: 8 }}>Reps</Text>
-                                                <TextInput
-                                                    keyboardType='number-pad'
-                                                    style={{
-                                                        height: 40,
-                                                        backgroundColor: 'white',
-                                                        borderWidth: 1,
-                                                        borderRadius: 8,
-                                                        paddingHorizontal: 12,
-                                                        fontSize: 16,
-                                                    }}
-                                                    value={String(currentReps)}
-                                                    editable={true}
-                                                    onChangeText={(text) => handleTextChange(text, type = "Reps")}
-                                                />
-                                            </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: 15, marginHorizontal: -30 }}>
-                                                <TouchableOpacity onPress={handlePrev} disabled={currentSet === 1} style={{ opacity: currentSet === 1 ? 0.2 : 1 }}>
-                                                    <Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 40, height: 40 }} />
-                                                </TouchableOpacity>
-                                                {currentSet < exercise.sets ?
-                                                    <TouchableOpacity onPress={handleNext} >
-                                                        <Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 40, height: 40, transform: [{ scaleX: -1 }] }} />
-                                                    </TouchableOpacity> :
-                                                    <TouchableOpacity onPress={handleComplete}>
-                                                        <Image source={require('../../../assets/check-mark.png')} tintColor={'white'} style={{ width: 40, height: 40 }} />
-                                                    </TouchableOpacity>
-                                                }
-                                            </View>
-                                        </View>
+                {!exercises.every(exercise => exercise.complete === true) ?
+                    <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }}>
+                        <View style={{ marginBottom: -15 }}>
+                            {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => (
+                                <View key={index}>
+                                    <CustomCard styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: activeDropdown === index ? 0 : null }} screen={
+                                        <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1 }} onPress={() => handleOpenDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
+                                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5 }}>{exercise.name}</Text>
+                                            <Text style={{ fontSize: 20, color: 'grey', margin: 5 }}>{exercise.sets} sets of {exercise.rep_range} Reps</Text>
+                                        </TouchableOpacity>
                                     } />
-                                    : null}
-                            </View>
-                        ))}
-                    </View>
-                </ScrollView>
+                                    
+                                        <Animated.View style={{ height: activeDropdown === index ? 310 : 0, overflow: 'hidden' }}>
+                                            <CustomCard styles={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, marginTop: 0, marginBottom: null, backgroundColor: '#1e1e1e', marginRight: 8, marginLeft: 8, paddingTop: 15 }} screen={
+                                                <View style={{ paddingHorizontal: 16 }}>
+                                                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 10 }}>Set {currentSet}</Text>
+                                                    <View style={{ marginBottom: 16, marginHorizontal: 10 }}>
+                                                        <Text style={{ fontSize: 18, color: 'white', marginBottom: 8 }}>Weight</Text>
+                                                        <TextInput
+                                                            keyboardType='numeric'
+                                                            style={{
+                                                                height: 40,
+                                                                backgroundColor: 'white',
+                                                                borderWidth: 1,
+                                                                borderRadius: 8,
+                                                                paddingHorizontal: 12,
+                                                                fontSize: 16,
+                                                            }}
+                                                            value={String(currentWeight)}
+                                                            editable={true}
+                                                            onChangeText={(text) => handleTextChange(text, type = "Weight")}
+                                                        />
+                                                    </View>
+                                                    <View style={{ marginBottom: 16, marginHorizontal: 10 }}>
+                                                        <Text style={{ fontSize: 18, color: 'white', marginBottom: 8 }}>Reps</Text>
+                                                        <TextInput
+                                                            keyboardType='number-pad'
+                                                            style={{
+                                                                height: 40,
+                                                                backgroundColor: 'white',
+                                                                borderWidth: 1,
+                                                                borderRadius: 8,
+                                                                paddingHorizontal: 12,
+                                                                fontSize: 16,
+                                                            }}
+                                                            value={String(currentReps)}
+                                                            editable={true}
+                                                            onChangeText={(text) => handleTextChange(text, type = "Reps")}
+                                                        />
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: 15, marginHorizontal: -30 }}>
+                                                        <TouchableOpacity onPress={handlePrev} disabled={currentSet === 1} style={{padding:15}}>
+                                                            <Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 30, height: 30 }} />
+                                                        </TouchableOpacity>
+                                                        {currentSet < exercise.sets ?
+                                                            <TouchableOpacity onPress={handleNext} style={{padding:15}}>
+                                                                <Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] }} />
+                                                            </TouchableOpacity> :
+                                                            <TouchableOpacity onPress={handleComplete} style={{padding:15}}>
+                                                                <Image source={require('../../../assets/check-mark.png')} tintColor={'white'} style={{ width: 30, height: 30 }} />
+                                                            </TouchableOpacity>
+                                                        }
+                                                    </View>
+                                                </View>
+                                            } />
+                                        </Animated.View>
+                                    
+                                </View>
+                            ))}
+                        </View>
+                    </ScrollView> :
+                    <View style={{ marginVertical: 30 }}>
+                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 20, alignSelf: 'center', textAlign: 'center', marginHorizontal: 40 }}>All Exercises Complete</Text>
+                        <CustomCard screen={
+                            <TouchableOpacity onPress={() => handleNextDay()}>
+                                <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white', margin: 15, alignSelf: 'center' }}>Continue to Next Workout</Text>
+                            </TouchableOpacity>
+                        } />
+                    </View>}
                 <View style={{ marginHorizontal: 90, marginTop: 5, marginBottom: 10, }}>
-                    <CustomCard screen={<TouchableOpacity onPress={() => navigation.navigate("Programs")} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
+                    <CustomCard screen={<TouchableOpacity onPress={() => { setActiveDropdown(null); navigation.navigate("Programs") }} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
                 </View>
             </View>
         ) : (
             <View style={{ flex: 1, justifyContent: 'center' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70, marginTop: 50, alignSelf: 'center', textAlign: 'center', }}>No Program Selected</Text>
                 <View style={{ marginHorizontal: 60 }}>
-                    <CustomCard screen={<TouchableOpacity onPress={() => navigation.navigate("Programs")} style={{ padding: 10 }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Select Program</Text></TouchableOpacity>} />
+                    <CustomCard screen={<TouchableOpacity onPress={() => { navigation.navigate("Programs") }} style={{ padding: 10 }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Select Program</Text></TouchableOpacity>} />
                 </View>
             </View>
         )
