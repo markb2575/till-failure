@@ -11,7 +11,10 @@ const starterJSON = {
             "Spider Curls": []
         },
         "Chest": {
-            "Barbell Bench Press": []
+            "Barbell Bench Press": [],
+            "Dumbbell Bench Press": [],
+            "Dips": [],
+            "Flys": [],
         },
         "Back": {
             "Lat Pulldowns": []
@@ -23,7 +26,7 @@ const starterJSON = {
     "programs": {
         "PPL": {
             "info": [
-                { "day": "Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 },{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 },{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 }] },
+                { "day": "Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 }] },
                 { "day": "Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
                 { "day": "Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
                 { "day": "Rest", "workouts": [] }],
@@ -73,7 +76,7 @@ const FileSystemCommands = {
     },
     async updateWorkoutFiles(data) {
         // console.log("in updateWorkoutFiles")
-        // console.log("data",data)
+        // console.log("data",data.programs["PPL"].state.exercises[0].data)
         try {
             await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(data));
         } catch (error) {

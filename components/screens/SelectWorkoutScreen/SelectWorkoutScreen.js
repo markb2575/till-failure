@@ -7,6 +7,7 @@ import { setStatusBarBackgroundColor } from 'expo-status-bar';
 import { ListItem, Card } from '@rneui/themed';
 import CustomCard from '../CustomCard';
 import ScrollPrograms from './ScrollPrograms';
+import CustomHeader from '../CustomHeader';
 
 export default function SelectWorkoutScreen({ navigation }) {
     const [data, setData] = useState(null);
@@ -21,29 +22,10 @@ export default function SelectWorkoutScreen({ navigation }) {
     //get files to check if initial route name should be select workout or workout page
     return (
         <View>
-            <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginHorizontal: 70, alignSelf: 'center', marginTop: 50 }}>Programs</Text>
             {data ? (
-                <View style={{ marginHorizontal: 15}}>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <CustomCard marginRight={0} screen={
-                            <TouchableOpacity onPress={() => navigation.navigate("Workout")} style={{padding:10, marginHorizontal:16.25}}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 30, height: 30, margin: 5 }} />
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5}}>Back</Text>
-                                </View>
-                            </TouchableOpacity>
-                        } />
-                        <CustomCard marginLeft={0} screen={
-                            <TouchableOpacity onPress={() => navigation.navigate("CreateWorkout")} style={{padding:10, marginHorizontal:16.25}}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent:'center'}}>
-                                    <Image source={require('../../../assets/plus.png')} tintColor={'white'} style={{ width: 30, height: 30, margin: 5 }} />
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5 }}>Create</Text>
-                                </View>
-                            </TouchableOpacity>
-                        } />
-                    </View>
+                <View style={{ marginHorizontal: 15 }}>
+                    <CustomHeader navigation={navigation} leftNavigate={"Workout"} rightNavigate={"CreateWorkout"} leftImage={<Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 26, height: 26 }} />} rightImage={<Image source={require('../../../assets/plus.png')} tintColor={'white'} style={{ width: 30, height: 30 }} />} titleText={"Programs"} />
                     <ScrollPrograms navigation={navigation} data={data} />
-
                 </View>
             ) : null}
         </View>

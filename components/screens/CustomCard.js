@@ -3,11 +3,11 @@ import { View, Text, Button, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 
 
-export default function CustomCard({ screen, marginRight, marginLeft, marginBottom, marginTop }) {
+export default function CustomCard({ screen, styles }) {
     return (
         <Card containerStyle={{
             borderRadius: 10,
-            backgroundColor: '#1b1b1b',
+            backgroundColor: '#242424',
             padding: 0,
             borderWidth: 0,
             // alignItems: 'center',
@@ -16,10 +16,11 @@ export default function CustomCard({ screen, marginRight, marginLeft, marginBott
             shadowOpacity: 0.4,
             shadowRadius: 2,
             elevation: 5,
-            marginRight: marginRight !== null ? marginRight : null,
-            marginLeft: marginLeft !== null ? marginLeft : null,
-            marginBottom: marginBottom !== null ? marginBottom : null,
-            marginTop: marginTop !== null ? marginTop : null,
+            // marginRight: marginRight !== null ? marginRight : null,
+            // marginLeft: marginLeft !== null ? marginLeft : null,
+            // marginBottom: marginBottom !== null ? marginBottom : null,
+            // marginTop: marginTop !== null ? marginTop : null,
+            ...styles
         }}>
             {screen}
         </Card>

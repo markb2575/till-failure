@@ -19,7 +19,7 @@ const HomeTabs = () => {
                     width: 30,
                 },
                 tabBarStyle: {
-                    backgroundColor: '#1b1b1b',
+                    backgroundColor: '#242424',
                     paddingBottom: 5,
                     paddingTop: 5,
                     borderTopColor: 'grey',
@@ -48,7 +48,7 @@ const HomeTabs = () => {
 
 export default function Navigation() {
     return (
-        <NavigationContainer theme={{ colors: { background: '#101010' } }}>
+        <NavigationContainer theme={{ colors: { background: '#141414' } }}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="HomeTabs" component={HomeTabs} />
                 <Stack.Screen name="Programs" component={SelectWorkoutScreen} />

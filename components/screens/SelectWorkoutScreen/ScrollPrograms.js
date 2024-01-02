@@ -17,11 +17,11 @@ export default function ScrollPrograms({ navigation, data }) {
     return (
         <View style={{ height: "78%" }}>
             <ScrollView
-                style={{ borderRadius: 10, marginHorizontal: 15 }}
+                style={{ borderRadius: 10, marginTop:15}}
             >
                 <View>
                     {Object.keys(data.programs).map((item, index) => (
-                        <CustomCard key={index} marginTop={0} marginLeft={0} marginRight={0} screen={
+                        <CustomCard key={index} styles={{marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom:null}} screen={
                             <TouchableOpacity onPress={() => handleProgramPress(item)} style={{ padding: 10 }}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <Image source={require('../../../assets/workout_icon.png')} tintColor={'white'} style={{ width: 30, height: 15, alignSelf: 'center', margin: 5 }} />
