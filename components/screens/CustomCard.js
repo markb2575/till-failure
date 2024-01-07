@@ -1,28 +1,31 @@
 import { Card } from '@rneui/themed';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
-
+import { Animated, View } from 'react-native';
+import React, { useEffect } from 'react';
 
 export default function CustomCard({ screen, styles }) {
+    // useEffect(() => {
+    //     if (styles === undefined) return
+    //     console.log(styles.backgroundColor)
+    // })
     return (
-        <Card containerStyle={{
-            borderRadius: 10,
-            backgroundColor: '#242424',
-            padding: 0,
-            borderWidth: 0,
-            // alignItems: 'center',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.4,
-            shadowRadius: 2,
-            elevation: 5,
-            // marginRight: marginRight !== null ? marginRight : null,
-            // marginLeft: marginLeft !== null ? marginLeft : null,
-            // marginBottom: marginBottom !== null ? marginBottom : null,
-            // marginTop: marginTop !== null ? marginTop : null,
-            ...styles
-        }}>
+        <Animated.View 
+            style={{
+                borderRadius: 10,
+                backgroundColor: '#242424',
+                padding: 0,
+                margin: 15,
+                // borderColor: 'grey',
+                borderWidth: 0,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.4,
+                shadowRadius: 2,
+                elevation: 5,
+                marginBottom:0,
+                ...styles
+            }}
+        >
             {screen}
-        </Card>
-    )
+        </Animated.View>
+    );
 }
