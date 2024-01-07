@@ -16,11 +16,11 @@ export default function WorkoutScreen({ navigation }) {
     const [exercises, setExercises] = useState(null);
     const [activeDropdown, setActiveDropdown] = useState(null)
     const [currentSet, setCurrentSet] = useState(1)
-    const [notValid, setNotValid] = useState(null)
+    const [notValid, setNotValid] = useState([])
     const [currentWeight, setCurrentWeight] = useState("")
     const [currentReps, setCurrentReps] = useState("")
     const isFocused = useIsFocused();
-    const animatedHeights = useRef(Array.from({ length: exercises === null ? 7 : exercises.length }, () => new Animated.Value(0))).current;
+    const animatedHeights = useRef(Array.from({ length: exercises === null ? 100 : exercises.length }, () => new Animated.Value(0))).current; //100 needs to be changed
 
 
     useEffect(() => {
@@ -201,49 +201,77 @@ export default function WorkoutScreen({ navigation }) {
         setData(data)
         // console.log("handleChange" ,exercises[activeDropdown].data, currentSet)
     }
-    const animatedColor = new Animated.Value(0);
-    const backgroundColorInterpolation = animatedColor.interpolate({
+    const animatedColors = useRef(Array.from({ length: exercises === null ? 100 : exercises.length }, () => new Animated.Value(0))).current;
+
+    const backgroundColorInterpolation = (index) => animatedColors[index].interpolate({
         inputRange: [0, 1],
         outputRange: ['#242424', '#ff0033'],
     });
-    useEffect(() => {
-        if (notValid !== null) {
-            Animated.timing(animatedColor, {
-                toValue: 1,
-                duration: 100,
-                // easing: Easing.out(Easing.exp),
-                useNativeDriver: false,
-            }).start(() => {
-                Animated.timing(animatedColor, {
-                    toValue: 0,
-                    duration: 1000,
-                    // easing: Easing.out(Easing.exp),
-                    useNativeDriver: false,
-                }).start(() => {
-                animatedColor.setValue(0);
-                setNotValid(null)})
-            });
 
-        }
-    }, [notValid]);
+    // useEffect(() => {
+    //     if (notValid.length !== 0) {console.log(notValid)
+    //         notValid.forEach((index) => {
+    //             console.log(index)
+    //             // animatedColors[index].setValue(0);
+
+    //             Animated.sequence([
+    //                 Animated.timing(animatedColors[index], {
+    //                     toValue: 1,
+    //                     duration: 100,
+    //                     easing: Easing.linear,
+    //                     useNativeDriver: false,
+    //                 }),
+    //                 Animated.delay(1000),
+    //                 Animated.timing(animatedColors[index], {
+    //                     toValue: 0,
+    //                     duration: 10000,
+    //                     easing: Easing.linear,
+    //                     useNativeDriver: false,
+    //                 }),
+    //             ]).start(() => {
+    //                 // Remove the processed index from the state
+    //                 setNotValid((prev) => prev.filter((item) => item !== index));
+    //             });
+    //         });
+    //     }
+    // }, [notValid, animatedColors]);
+
+
+
     const handleComplete = () => {
         // Check that everything has a valid value
         const isValid = !exercises[activeDropdown].data.some(set => set.weight === null || set.reps === null || Number.isNaN(set.weight));
-        setNotValid(activeDropdown);
-    
         if (!isValid) {
-            console.log("starting animation");
-            console.log(notValid);
+            setNotValid((prev) => [...prev, activeDropdown]);
+            Animated.sequence([
+                Animated.timing(animatedColors[activeDropdown], {
+                    toValue: 1,
+                    duration: 100,
+                    easing: Easing.linear,
+                    useNativeDriver: false,
+                }),
+                Animated.timing(animatedColors[activeDropdown], {
+                    toValue: 0,
+                    duration: 3000,
+                    easing: Easing.linear,
+                    useNativeDriver: false,
+                }),
+            ]).start(() => {
+                // Remove the processed index from the state
+                console.log(notValid)
+                setNotValid((prev) => prev.filter((item) => item !== activeDropdown));
+                console.log(notValid)
+            });
             return;  // Do not proceed with animation if not valid
         }
-    
+
         // Add to workouts
         exercises[activeDropdown].complete = true;
         let category = Object.keys(data.workouts).find(category => data.workouts[category].hasOwnProperty(exercises[activeDropdown].name));
         data.workouts[category][exercises[activeDropdown].name] = [...exercises[activeDropdown].data];
         FileSystemCommands.updateWorkoutFiles(data);
         setData(data);
-    
+
         // Disable button, dim color, move to bottom if possible
         setActiveDropdown(null);
     };
@@ -274,7 +302,7 @@ export default function WorkoutScreen({ navigation }) {
                     <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }}>
                         <View style={{ marginBottom: -15 }}>
                             {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => (
-                                <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid === index ? backgroundColorInterpolation : '#242424', }} screen={
+                                <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation(index) : '#242424', }} screen={
                                     <View>
                                         <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
                                             <View>
@@ -307,7 +335,7 @@ export default function WorkoutScreen({ navigation }) {
                                                     <TouchableOpacity onPress={handleNext} style={{ padding: 15 }}>
                                                         <Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] }} />
                                                     </TouchableOpacity> :
-                                                    <TouchableOpacity onPress={handleComplete} style={{ padding: 15 }}>
+                                                    <TouchableOpacity onPress={handleComplete} style={{ padding: 15, opacity: notValid.includes(index) ? .2 : 1 }} disabled={notValid.includes(index) ? true : false}>
                                                         <Image source={require('../../../assets/check-mark.png')} tintColor={'white'} style={{ width: 30, height: 30 }} />
                                                     </TouchableOpacity>
                                                 }
