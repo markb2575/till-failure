@@ -2,27 +2,19 @@ import * as FileSystem from 'expo-file-system';
 import workouts from '../../workouts.json';
 const dir = FileSystem.documentDirectory;
 const starterJSON = {
-    "workouts": {
-        "Arms": {
-            "Dumbell Bicep Curls": [],
-            "Barbell Bicep Curls": [],
-            "Hammer Curls": [],
-            "Preacher Curls": [],
-            "Spider Curls": []
-        },
-        "Chest": {
-            "Barbell Bench Press": [],
-            "Dumbbell Bench Press": [],
-            "Dips": [],
-            "Flys": [],
-        },
-        "Back": {
-            "Lat Pulldowns": []
-        },
-        "Legs": {
-            "Barbell Squats": []
-        }
-    },
+    "workouts": [
+            {"name": "Dumbell Bicep Curls", "targets":["arms"], "data":[]},
+            {"name": "Barbell Bicep Curls", "targets":["arms"], "data":[]},
+            {"name": "Hammer Curls", "targets":["arms"], "data":[]},
+            {"name": "Preacher Curls", "targets":["arms"], "data":[]},
+            {"name": "Spider Curls", "targets":["arms"], "data":[]},
+            {"name": "Barbell Bench Press", "targets":["chest"], "data":[]},
+            {"name": "Dumbbell Bench Press", "targets":["chest"], "data":[]},
+            {"name": "Dips", "targets":["chest"], "data":[]},
+            {"name": "Flys", "targets":["chest"], "data":[]},
+            {"name": "Lat Pulldowns", "targets":["back"], "data":[]},
+            {"name": "Barbell Squats", "targets":["legs"], "data":[]},
+    ],
     "programs": {
         "PPL": {
             "info": [
@@ -43,6 +35,17 @@ const starterJSON = {
                 { "day": "Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }] },
                 { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
                 { "day": "Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
+                { "day": "Rest", "workouts": [] }],
+            "state": {
+                "currentDay": null,
+                "exercises": []
+            }
+        },
+        "Test": {
+            "info": [
+                { "day": "Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 2 }] },
+                { "day": "Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 2 }] },
+                { "day": "Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 2 }] },
                 { "day": "Rest", "workouts": [] }],
             "state": {
                 "currentDay": null,
@@ -75,8 +78,8 @@ const FileSystemCommands = {
         }
     },
     async updateWorkoutFiles(data) {
-        // console.log("in updateWorkoutFiles")
-        // console.log("data",data.programs["PPL"].state.exercises[0].data)
+        console.log("in updateWorkoutFiles")
+        data.workouts.forEach(program => console.log(program.name, program.targets, program.data))
         try {
             await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(data));
         } catch (error) {

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 // import * as FS from 'expo-file-system'
 import FileSystemCommands from "../../util/FileSystemCommands"
 import { useState, useRef } from 'react';
-import { View, Text, Button, TouchableOpacity, ScrollView, TextInput, Image, Animated, Easing } from 'react-native';
+import { View, Text, Button, TouchableOpacity, ScrollView, TextInput, Image, Animated, Easing, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ListItem, Card } from '@rneui/themed';
@@ -61,52 +61,58 @@ export default function WorkoutScreen({ navigation }) {
                         }
                     })
                 }
+
                 FileSystemCommands.updateWorkoutFiles(res)
                 setData(res)
                 setExercises(res.programs[res.state.selectedProgram].state.exercises)
+                console.log("exercises 1")
+                res.programs[res.state.selectedProgram].state.exercises.forEach(exercise=> console.log(exercise.data))
             })
         }
     }, [isFocused, setData, currentDay])
 
     const animatedRotations = useRef(Array.from({ length: exercises === null ? 7 : exercises.length }, () => new Animated.Value(1))).current;
 
+    const closeDropdown = (dropdownIndex) => {
+        Animated.timing(animatedHeights[dropdownIndex], {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false,
+        }).start();
+
+        // Reset scaleY to 1 for flipping back to its original position
+        Animated.timing(animatedRotations[dropdownIndex], {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: false,
+        }).start();
+    };
+
+    const openDropdown = (dropdownIndex, exercise) => {
+        Animated.timing(animatedHeights[dropdownIndex], {
+            toValue: 310,
+            duration: 200,
+            useNativeDriver: false,
+        }).start();
+
+        // Set scaleY to -1 for flipping around the x-axis
+        Animated.timing(animatedRotations[dropdownIndex], {
+            toValue: -1,
+            duration: 200,
+            useNativeDriver: false,
+        }).start();
+
+        setActiveDropdown(dropdownIndex);
+        setCurrentSet(1);
+        setCurrentReps(exercise.data[0]?.reps || "");
+        setCurrentWeight(exercise.data[0]?.weight || "");
+    };
+
     const handleToggleDropdown = (exercise, index) => {
+        Keyboard.dismiss()
         console.log("index:" + index, "activeDropdown:" + activeDropdown);
 
-        const closeDropdown = (dropdownIndex) => {
-            Animated.timing(animatedHeights[dropdownIndex], {
-                toValue: 0,
-                duration: 200,
-                useNativeDriver: false,
-            }).start();
 
-            // Reset scaleY to 1 for flipping back to its original position
-            Animated.timing(animatedRotations[dropdownIndex], {
-                toValue: 1,
-                duration: 200,
-                useNativeDriver: false,
-            }).start();
-        };
-
-        const openDropdown = (dropdownIndex) => {
-            Animated.timing(animatedHeights[dropdownIndex], {
-                toValue: 310,
-                duration: 200,
-                useNativeDriver: false,
-            }).start();
-
-            // Set scaleY to -1 for flipping around the x-axis
-            Animated.timing(animatedRotations[dropdownIndex], {
-                toValue: -1,
-                duration: 200,
-                useNativeDriver: false,
-            }).start();
-
-            setActiveDropdown(dropdownIndex);
-            setCurrentSet(1);
-            setCurrentReps(exercise.data[0]?.reps || "");
-            setCurrentWeight(exercise.data[0]?.weight || "");
-        };
 
         // If clicking on the open dropdown, close it
         if (index === activeDropdown) {
@@ -116,10 +122,10 @@ export default function WorkoutScreen({ navigation }) {
             // If there is an open dropdown, close it first
             if (activeDropdown !== null) {
                 closeDropdown(activeDropdown);
-                openDropdown(index);
+                openDropdown(index, exercise);
             } else {
                 // Open the clicked dropdown if there isn't an open dropdown
-                openDropdown(index);
+                openDropdown(index, exercise);
             }
         }
     };
@@ -173,14 +179,14 @@ export default function WorkoutScreen({ navigation }) {
     const animateTextTranslation = (toValue, then) => {
         Animated.timing(animatedTextTranslation, {
             toValue,
-            duration: 100,
+            duration: 120,
             useNativeDriver: false,
         }).start(() => {
             then()
             animatedTextTranslation.setValue(-toValue)
             Animated.timing(animatedTextTranslation, {
                 toValue: 0,
-                duration: 100,
+                duration: 120,
                 useNativeDriver: false,
             }).start()
         });
@@ -230,7 +236,7 @@ export default function WorkoutScreen({ navigation }) {
                 }),
                 Animated.timing(animatedColors[activeDropdown], {
                     toValue: 0,
-                    duration: 3000,
+                    duration: 1000,
                     easing: Easing.linear,
                     useNativeDriver: false,
                 }),
@@ -245,15 +251,36 @@ export default function WorkoutScreen({ navigation }) {
 
         // Add to workouts
         exercises[activeDropdown].complete = true;
-        let category = Object.keys(data.workouts).find(category => data.workouts[category].hasOwnProperty(exercises[activeDropdown].name));
-        data.workouts[category][exercises[activeDropdown].name] = [...exercises[activeDropdown].data];
+        data.workouts.find(exercise => exercise.name === exercises[activeDropdown].name).data = [...exercises[activeDropdown].data];
         FileSystemCommands.updateWorkoutFiles(data);
         setData(data);
-
-        // Disable button, dim color, move to bottom if possible
+        closeDropdown(activeDropdown)
         setActiveDropdown(null);
     };
-
+    const holdAnimation = useRef(new Animated.Value(0)).current;
+    const handleHold = () => {
+        console.log("holding")
+        Animated.timing(holdAnimation, {
+            toValue: 360,
+            duration: 600,
+            useNativeDriver: false,
+        }).start(() => {
+            if (holdAnimation._value === 360) {
+                handleNextDay()
+                holdAnimation.setValue(0)
+            }
+        })
+    }
+    const handleRelease = () => {
+        console.log("release");
+        Animated.timing(holdAnimation, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: false,
+        }).start()
+        // holdAnimation.stop(); // Stop the animation
+        // holdAnimation.setValue(0); // Reset the animation value to 0
+    };
     const handleNextDay = () => {
         const length = Object.values(data.programs[data.state.selectedProgram].info).length
         const currentIndex = Object.values(data.programs[data.state.selectedProgram].info).findIndex(day => day.day.toLowerCase() === currentDay.toLowerCase())
@@ -269,18 +296,25 @@ export default function WorkoutScreen({ navigation }) {
         }
         data.programs[data.state.selectedProgram].state.exercises = []
         FileSystemCommands.updateWorkoutFiles(data)
-
+        animatedHeights.forEach(animatedHeight => animatedHeight.setValue(0))
+        animatedRotations.forEach(animatedRotation => animatedRotation.setValue(1))
         setExercises(null)
+        setCurrentReps("")
+        setCurrentWeight("")
+        console.log("exercises 2")
+        exercises.forEach(exercise=> console.log(exercise.data))
     }
     return (
         selectedProgram && exercises ? (
+
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginTop: 50, alignSelf: 'center' }}>{currentDay}</Text>
                 {!exercises.every(exercise => exercise.complete === true) ?
-                    <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }}>
+                    <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }} keyboardShouldPersistTaps={'always'}>
+
                         <View style={{ marginBottom: -15 }}>
                             {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => (
-                                <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation(index) : '#242424', transform: [{translateX: shakeAnimation[index]}]}} screen={
+                                <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation(index) : '#242424', transform: [{ translateY: shakeAnimation[index] }] }} screen={
                                     <View>
                                         <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
                                             <View>
@@ -365,12 +399,25 @@ export default function WorkoutScreen({ navigation }) {
                         </View>
                     </ScrollView> :
                     <View style={{ marginVertical: 30 }}>
-                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 20, alignSelf: 'center', textAlign: 'center', marginHorizontal: 40 }}>All Exercises Complete</Text>
+                        {currentDay === "Rest" ? 
+                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 20, alignSelf: 'center', textAlign: 'center', marginHorizontal: 40, }}>Enjoy your Rest Day</Text>:
+                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 20, alignSelf: 'center', textAlign: 'center', marginHorizontal: 40, }}>All Exercises Complete</Text>}
                         <CustomCard screen={
-                            <TouchableOpacity onPress={() => handleNextDay()}>
-                                <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white', margin: 15, alignSelf: 'center' }}>Continue to Next Workout</Text>
-                            </TouchableOpacity>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Animated.View style={{ backgroundColor: "green", width: holdAnimation, height: 50, borderRadius: 10, marginRight: 10 }}>
+                                </Animated.View>
+                                <CustomCard styles={{ position: 'absolute', backgroundColor: "transparent", shadowOpacity: 0 }} screen={
+                                    <TouchableOpacity onPressIn={handleHold} onPressOut={handleRelease} style={{ alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white', margin: 15, textAlign: 'center' }}>Continue to Next Workout</Text>
+                                    </TouchableOpacity>
+                                } />
+                            </View>
                         } />
+
+
+
+
+
                     </View>}
                 <View style={{ marginHorizontal: 90, marginTop: 5, marginBottom: 10, }}>
                     <CustomCard screen={<TouchableOpacity onPress={() => { setActiveDropdown(null); navigation.navigate("Programs") }} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
