@@ -208,41 +208,19 @@ export default function WorkoutScreen({ navigation }) {
         outputRange: ['#242424', '#ff0033'],
     });
 
-    // useEffect(() => {
-    //     if (notValid.length !== 0) {console.log(notValid)
-    //         notValid.forEach((index) => {
-    //             console.log(index)
-    //             // animatedColors[index].setValue(0);
-
-    //             Animated.sequence([
-    //                 Animated.timing(animatedColors[index], {
-    //                     toValue: 1,
-    //                     duration: 100,
-    //                     easing: Easing.linear,
-    //                     useNativeDriver: false,
-    //                 }),
-    //                 Animated.delay(1000),
-    //                 Animated.timing(animatedColors[index], {
-    //                     toValue: 0,
-    //                     duration: 10000,
-    //                     easing: Easing.linear,
-    //                     useNativeDriver: false,
-    //                 }),
-    //             ]).start(() => {
-    //                 // Remove the processed index from the state
-    //                 setNotValid((prev) => prev.filter((item) => item !== index));
-    //             });
-    //         });
-    //     }
-    // }, [notValid, animatedColors]);
-
-
+    const shakeAnimation = useRef(Array.from({ length: exercises === null ? 100 : exercises.length }, () => new Animated.Value(0))).current;
 
     const handleComplete = () => {
         // Check that everything has a valid value
         const isValid = !exercises[activeDropdown].data.some(set => set.weight === null || set.reps === null || Number.isNaN(set.weight));
         if (!isValid) {
             setNotValid((prev) => [...prev, activeDropdown]);
+            Animated.sequence([
+                Animated.timing(shakeAnimation[activeDropdown], { toValue: 5, duration: 50, useNativeDriver: false }),
+                Animated.timing(shakeAnimation[activeDropdown], { toValue: -5, duration: 50, useNativeDriver: false }),
+                Animated.timing(shakeAnimation[activeDropdown], { toValue: 5, duration: 50, useNativeDriver: false }),
+                Animated.timing(shakeAnimation[activeDropdown], { toValue: 0, duration: 50, useNativeDriver: false })
+            ]).start();
             Animated.sequence([
                 Animated.timing(animatedColors[activeDropdown], {
                     toValue: 1,
@@ -302,7 +280,7 @@ export default function WorkoutScreen({ navigation }) {
                     <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }}>
                         <View style={{ marginBottom: -15 }}>
                             {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => (
-                                <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation(index) : '#242424', }} screen={
+                                <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation(index) : '#242424', transform: [{translateX: shakeAnimation[index]}]}} screen={
                                     <View>
                                         <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
                                             <View>
