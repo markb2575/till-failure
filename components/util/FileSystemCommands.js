@@ -23,21 +23,18 @@ const starterJSON = {
                 { "day": "Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
                 { "day": "Rest", "workouts": [] }],
             "state": {
-                "currentDay": null,
+                "currentDayIndex": 0,
                 "exercises": []
             }
         },
         "Arnold": {
             "info": [
-                { "day": "Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }] },
-                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
-                { "day": "Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
-                { "day": "Chest, Back, Abs", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 }] },
-                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
-                { "day": "Legs, Abs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
+                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 2 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 2 }] },
+                { "day": "Rest", "workouts": [] },
+                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 2 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 2 }] },
                 { "day": "Rest", "workouts": [] }],
             "state": {
-                "currentDay": null,
+                "currentDayIndex": 0,
                 "exercises": []
             }
         },
@@ -48,7 +45,7 @@ const starterJSON = {
                 { "day": "Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 2 }] },
                 { "day": "Rest", "workouts": [] }],
             "state": {
-                "currentDay": null,
+                "currentDayIndex": 0,
                 "exercises": []
             }
         }

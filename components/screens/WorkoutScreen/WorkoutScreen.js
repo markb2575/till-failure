@@ -9,6 +9,7 @@ export default function WorkoutScreen({ navigation }) {
     const [data, setData] = useState(null);
     const [selectedProgram, setSelectedProgram] = useState(null);
     const [currentDay, setCurrentDay] = useState(null);
+    const [currentDayIndex, setCurrentDayIndex] = useState(null);
     const [exercises, setExercises] = useState(null);
     const [activeDropdown, setActiveDropdown] = useState(null)
     const [currentSet, setCurrentSet] = useState(1)
@@ -16,26 +17,29 @@ export default function WorkoutScreen({ navigation }) {
     const [currentWeight, setCurrentWeight] = useState("")
     const [currentReps, setCurrentReps] = useState("")
     const isFocused = useIsFocused();
-    const animatedHeights = useRef(Array.from({ length: exercises === null ? 100 : exercises.length }, () => new Animated.Value(0))).current; //100 needs to be changed
+    const animatedHeights = useRef(Array.from({ length:  100  }, () => new Animated.Value(0))).current;
+    const animatedRotations = useRef(Array.from({ length:  100  }, () => new Animated.Value(1))).current;
+
     useEffect(() => {
         if (isFocused) {
             FileSystemCommands.setupProject().then(res => {
-                animatedHeights.forEach(animatedHeight => animatedHeight.setValue(0))
-                animatedRotations.forEach(animatedRotation => animatedRotation.setValue(1))
                 setData(res)
                 if (res.state.selectedProgram === null) return
                 setSelectedProgram(res.state.selectedProgram)
-                if (res.programs[res.state.selectedProgram].state.currentDay === null) {
+                if (res.programs[res.state.selectedProgram].state.currentDayIndex === null) {
                     setCurrentDay(res.programs[res.state.selectedProgram].info[0].day)
+                    setCurrentDayIndex(0)
                     res.programs[res.state.selectedProgram].state.currentDay = res.programs[res.state.selectedProgram].info[0].day
                     FileSystemCommands.updateWorkoutFiles(res)
                     setData(res)
                 } else {
-                    setCurrentDay(res.programs[res.state.selectedProgram].state.currentDay)
+                    setCurrentDay(res.programs[res.state.selectedProgram].info[res.programs[res.state.selectedProgram].state.currentDayIndex].day)
+                    setCurrentDayIndex(res.programs[res.state.selectedProgram].state.currentDayIndex)
                 }
                 if (res.programs[res.state.selectedProgram].state.exercises.length === 0 || res.programs[res.state.selectedProgram].state.exercises === null) {
-                    res.programs[res.state.selectedProgram].info.forEach(info => {
-                        if (info.day === res.programs[res.state.selectedProgram].state.currentDay) {
+                    res.programs[res.state.selectedProgram].info.forEach((info, index) => {
+                        if (index === res.programs[res.state.selectedProgram].state.currentDayIndex) {
+                            
                             res.programs[res.state.selectedProgram].state.exercises = []
                             info.workouts.forEach(item => {
                                 res.programs[res.state.selectedProgram].state.exercises.push({ 'name': item.name, 'rep_range': item.rep_range, 'sets': item.sets, 'complete': false });
@@ -57,8 +61,8 @@ export default function WorkoutScreen({ navigation }) {
                 setExercises(res.programs[res.state.selectedProgram].state.exercises)
             })
         }
-    }, [isFocused, setData, currentDay])
-    const animatedRotations = useRef(Array.from({ length: exercises === null ? 7 : exercises.length }, () => new Animated.Value(1))).current;
+    }, [isFocused, currentDay, animatedHeights, animatedRotations])
+
     const closeDropdown = (dropdownIndex) => {
         Animated.timing(animatedHeights[dropdownIndex], {
             toValue: 0,
@@ -89,7 +93,6 @@ export default function WorkoutScreen({ navigation }) {
     };
     const holdAnimation = useRef(new Animated.Value(0)).current;
     const handleHold = () => {
-        console.log("holding")
         Animated.timing(holdAnimation, {
             toValue: 360,
             duration: 600,
@@ -102,7 +105,6 @@ export default function WorkoutScreen({ navigation }) {
         })
     }
     const handleRelease = () => {
-        console.log("release");
         Animated.timing(holdAnimation, {
             toValue: 0,
             duration: 100,
@@ -111,14 +113,16 @@ export default function WorkoutScreen({ navigation }) {
     };
     const handleNextDay = () => {
         const length = Object.values(data.programs[data.state.selectedProgram].info).length
-        const currentIndex = Object.values(data.programs[data.state.selectedProgram].info).findIndex(day => day.day.toLowerCase() === currentDay.toLowerCase())
-        if (currentIndex === length - 1) {
+        if (currentDayIndex === length - 1) {
             setCurrentDay(data.programs[data.state.selectedProgram].info[0].day)
-            data.programs[data.state.selectedProgram].state.currentDay = data.programs[data.state.selectedProgram].info[0].day
+            setCurrentDayIndex(0)
+            data.programs[data.state.selectedProgram].state.currentDayIndex = 0
         } else {
-            const nextDay = data.programs[data.state.selectedProgram].info[Object.values(data.programs[data.state.selectedProgram].info).findIndex(day => day.day.toLowerCase() === currentDay.toLowerCase()) + 1].day
+            const nextDayIndex = currentDayIndex + 1
+            const nextDay = data.programs[data.state.selectedProgram].info[nextDayIndex].day
             setCurrentDay(nextDay)
-            data.programs[data.state.selectedProgram].state.currentDay = nextDay
+            setCurrentDayIndex(nextDayIndex)
+            data.programs[data.state.selectedProgram].state.currentDayIndex = nextDayIndex
         }
         data.programs[data.state.selectedProgram].state.exercises = []
         FileSystemCommands.updateWorkoutFiles(data)
@@ -132,8 +136,10 @@ export default function WorkoutScreen({ navigation }) {
         selectedProgram && exercises ? (
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginTop: 50, alignSelf: 'center' }}>{currentDay}</Text>
+                {/* {console.log("here")}
+                {exercises.forEach(exercise=>console.log(exercise.name))} */}
                 {!exercises.every(exercise => exercise.complete === true) ?
-                    <ScrollWorkouts {...{data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown}}/>:
+                    <ScrollWorkouts {...{ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown }} /> :
                     <View style={{ marginVertical: 30 }}>
                         {currentDay === "Rest" ?
                             <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 20, alignSelf: 'center', textAlign: 'center', marginHorizontal: 40, }}>Enjoy your Rest Day</Text> :
@@ -149,11 +155,13 @@ export default function WorkoutScreen({ navigation }) {
                                 } />
                             </View>
                         } />
-                    </View>}
+                    </View>
+                }
+
                 <View style={{ marginHorizontal: 90, marginTop: 5, marginBottom: 10, }}>
                     <CustomCard screen={<TouchableOpacity onPress={() => { setActiveDropdown(null); navigation.navigate("Programs") }} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
                 </View>
-            </View >
+            </View>
         ) : (
             <View style={{ flex: 1, justifyContent: 'center' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70, marginTop: 50, alignSelf: 'center', textAlign: 'center', }}>No Program Selected</Text>
@@ -161,6 +169,7 @@ export default function WorkoutScreen({ navigation }) {
                     <CustomCard screen={<TouchableOpacity onPress={() => { navigation.navigate("Programs") }} style={{ padding: 10 }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Select Program</Text></TouchableOpacity>} />
                 </View>
             </View>
+
         )
     );
 }

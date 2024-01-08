@@ -5,8 +5,17 @@ import { Card } from '@rneui/themed';
 import CustomCard from '../CustomCard';
 export default function ScrollWorkouts({ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown}) {
     const animatedTextTranslation = useRef(new Animated.Value(0)).current;
-    const animatedColors = useRef(Array.from({ length: exercises === null ? 100 : exercises.length }, () => new Animated.Value(0))).current;
-    const shakeAnimation = useRef(Array.from({ length: exercises === null ? 100 : exercises.length }, () => new Animated.Value(0))).current;
+    const animatedColors = useRef(Array.from({ length:  100  }, () => new Animated.Value(0))).current;
+    const shakeAnimation = useRef(Array.from({ length:  100  }, () => new Animated.Value(0))).current;
+    // const animatedColors = useRef([]);
+    // const shakeAnimation = useRef([]);
+
+    // useEffect(() => {
+    //     // Filter out undefined exercises
+    //     const validExercises = exercises.filter((exercise) => exercise !== undefined);
+    //     setFilteredExercises(validExercises);
+    //   }, [exercises]);
+
     const backgroundColorInterpolation = (index) => animatedColors[index].interpolate({
         inputRange: [0, 1],
         outputRange: ['#242424', '#ff0033'],
@@ -35,9 +44,9 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
                     useNativeDriver: false,
                 }),
             ]).start(() => {
-                console.log(notValid)
+                // console.log(notValid)
                 setNotValid((prev) => prev.filter((item) => item !== activeDropdown));
-                console.log(notValid)
+                // console.log(notValid)
             });
             return;
         }
@@ -51,7 +60,6 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
     };
     const handleToggleDropdown = (exercise, index) => {
         Keyboard.dismiss()
-        console.log("index:" + index, "activeDropdown:" + activeDropdown);
         if (index === activeDropdown) {
             closeDropdown(index);
             setActiveDropdown(null);
@@ -86,7 +94,6 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
     }
     const handleNext = () => {
         Keyboard.dismiss()
-        console.log("handleNext", currentReps, currentSet)
         if (animatedTextTranslation._value !== 0) {
             setCurrentReps(exercises[activeDropdown].data[currentSet].reps === null ? "" : exercises[activeDropdown].data[currentSet].reps)
             setCurrentWeight(exercises[activeDropdown].data[currentSet].weight === null || Number.isNaN(exercises[activeDropdown].data[currentSet].weight) ? "" : exercises[activeDropdown].data[currentSet].weight)
@@ -103,7 +110,6 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
             ))
         }
         );
-        console.log("handleNextEnd", currentReps, currentSet)
     }
     const animateTextTranslation = (toValue, then) => {
         Animated.timing(animatedTextTranslation, {
@@ -121,7 +127,6 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
         });
     };
     const handleTextChange = (text, type) => {
-        console.log("handleTextChange", type === "Weight" ? text.replace(currentWeight, "") : text.replace(currentReps, ""), type === "Weight" ? "old: " + currentWeight : "old: " + currentReps, "new: " + text)
         if (type === "Weight") {
             setCurrentWeight(text)
             exercises[activeDropdown].data[currentSet - 1].weight = text === "" ? null : Number(text)
@@ -135,7 +140,8 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
     return (
         <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }} keyboardShouldPersistTaps={'always'}>
             <View style={{ marginBottom: -15 }}>
-                {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => (
+                {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => {
+                    return (
                     <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation(index) : '#242424', transform: [{ translateY: shakeAnimation[index] }] }} screen={
                         <View>
                             <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
@@ -150,7 +156,7 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
                                         height: 30,
                                         transform: [
                                             { rotate: "-90deg" },
-                                            { scaleX: animatedRotations[index]?.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) },
+                                            { scaleX: animatedRotations[index]?.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] })},
                                         ],
                                         tintColor: 'white',
                                         marginRight: 15,
@@ -214,7 +220,7 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
                             </Animated.View>
                         </View>
                     } />
-                ))}
+                )})}
             </View>
         </ScrollView>
     )
