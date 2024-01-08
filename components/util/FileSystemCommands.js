@@ -78,8 +78,8 @@ const FileSystemCommands = {
         }
     },
     async updateWorkoutFiles(data) {
-        console.log("in updateWorkoutFiles")
-        data.workouts.forEach(program => console.log(program.name, program.targets, program.data))
+        // console.log("in updateWorkoutFiles")
+        // data.workouts.forEach(program => console.log(program.name, program.targets, program.data))
         try {
             await FileSystem.writeAsStringAsync(dir + "workouts.json", JSON.stringify(data));
         } catch (error) {
