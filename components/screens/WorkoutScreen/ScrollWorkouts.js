@@ -228,7 +228,7 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
                                                 fontSize: 16,
                                             }}
                                             placeholderTextColor={"grey"}
-                                            placeholder={recommendedWeight?String(Math.round(recommendedWeight)):""}
+                                            placeholder={recommendedWeight ? String(Math.round(recommendedWeight / 5) * 5) : ""}
                                             value={String(currentWeight)}
                                             onChangeText={(text) => handleTextChange(text, type = "Weight")}
                                         />
