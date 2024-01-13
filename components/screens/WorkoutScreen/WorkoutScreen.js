@@ -16,9 +16,15 @@ export default function WorkoutScreen({ navigation }) {
     const [notValid, setNotValid] = useState([])
     const [currentWeight, setCurrentWeight] = useState("")
     const [currentReps, setCurrentReps] = useState("")
+    const [recommendedWeight, setRecommendedWeight] = useState("")
     const isFocused = useIsFocused();
     const animatedHeights = useRef(Array.from({ length:  100  }, () => new Animated.Value(0))).current;
     const animatedRotations = useRef(Array.from({ length:  100  }, () => new Animated.Value(1))).current;
+
+
+    const updateRecommendedWeight = (prevWeight, prevReps, optimalReps) => {
+        setRecommendedWeight(((prevWeight*prevReps)+(30*prevWeight))/(optimalReps + 30))
+    }
 
     useEffect(() => {
         if (isFocused) {
@@ -39,10 +45,19 @@ export default function WorkoutScreen({ navigation }) {
                 if (res.programs[res.state.selectedProgram].state.exercises.length === 0 || res.programs[res.state.selectedProgram].state.exercises === null) {
                     res.programs[res.state.selectedProgram].info.forEach((info, index) => {
                         if (index === res.programs[res.state.selectedProgram].state.currentDayIndex) {
-                            
                             res.programs[res.state.selectedProgram].state.exercises = []
                             info.workouts.forEach(item => {
-                                res.programs[res.state.selectedProgram].state.exercises.push({ 'name': item.name, 'rep_range': item.rep_range, 'sets': item.sets, 'complete': false });
+                                let prevWeight = null;
+                                let prevReps = null;
+                                res.workouts.forEach(workout => {
+                                    if (workout.name === item.name) {
+                                        const lastElement = workout.data[workout.data.length - 1]
+                                        if (lastElement === undefined) return
+                                        prevWeight = lastElement.weight
+                                        prevReps = lastElement.reps
+                                    }
+                                })
+                                res.programs[res.state.selectedProgram].state.exercises.push({ 'name': item.name, 'rep_range': item.rep_range, 'sets': item.sets, 'complete': false, 'current_set': '1', 'prev_weight': null, 'prev_reps': null, "optimal_reps": (Number(item.rep_range.split('-')[0]) + Number(item.rep_range.split('-')[1]))/2 });
                             })
                         }
                     })
@@ -76,6 +91,7 @@ export default function WorkoutScreen({ navigation }) {
         }).start();
     };
     const openDropdown = (dropdownIndex, exercise) => {
+        console.log("exercise",exercise)
         Animated.timing(animatedHeights[dropdownIndex], {
             toValue: 310,
             duration: 200,
@@ -86,10 +102,23 @@ export default function WorkoutScreen({ navigation }) {
             duration: 200,
             useNativeDriver: false,
         }).start();
+        //if the previous set reps and weight are filled in recommended weight to reach optimal weight
+        console.log(exercise.prev_weight,exercise.prev_reps,exercise.optimal_reps)
+        let prevWeight = null;
+        let prevReps = null;
+        data.workouts.forEach(workout => {
+            if (workout.name === exercise.name) {
+                const lastElement = workout.data[workout.data.length - 1]
+                if (lastElement === undefined) return
+                prevWeight = lastElement.weight
+                prevReps = lastElement.reps
+            }
+        })
+        updateRecommendedWeight(prevWeight,prevReps,exercise.optimal_reps)
         setActiveDropdown(dropdownIndex);
         setCurrentSet(1);
-        setCurrentReps(exercise.data[0]?.reps || "");
-        setCurrentWeight(exercise.data[0]?.weight || "");
+        setCurrentReps(exercise.data[0].reps!==null?exercise.data[0].reps:"");
+        setCurrentWeight(exercise.data[0].weight!==null?exercise.data[0].weight:"");
     };
     const holdAnimation = useRef(new Animated.Value(0)).current;
     const handleHold = () => {
@@ -139,7 +168,7 @@ export default function WorkoutScreen({ navigation }) {
                 {/* {console.log("here")}
                 {exercises.forEach(exercise=>console.log(exercise.name))} */}
                 {!exercises.every(exercise => exercise.complete === true) ?
-                    <ScrollWorkouts {...{ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown }} /> :
+                    <ScrollWorkouts {...{ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight }} /> :
                     <View style={{ marginVertical: 30 }}>
                         {currentDay === "Rest" ?
                             <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 20, alignSelf: 'center', textAlign: 'center', marginHorizontal: 40, }}>Enjoy your Rest Day</Text> :

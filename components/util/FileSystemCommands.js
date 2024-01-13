@@ -49,7 +49,7 @@ const starterJSON = {
         {"name": "Kettlebell Pistol Squat", "target": "Quadriceps", "rating": 9.1, "data": []},
         {"name": "Overhead dumbbell front raise", "target": "Shoulders", "rating": 9.1, "data": []},
         {"name": "Biceps curl to shoulder press", "target": "Biceps", "rating": 9.1, "data": []},
-        {"name": "Barbell Bench Press - Medium Grip", "target": "Chest", "rating": 9, "data": []},
+        {"name": "Barbell Bench Press", "target": "Chest", "rating": 9, "data": []},
         {"name": "Seated dumbbell shoulder press", "target": "Shoulders", "rating": 9, "data": []},
         {"name": "Barbell Curl", "target": "Biceps", "rating": 9, "data": []},
         {"name": "EZ-Bar Skullcrusher", "target": "Triceps", "rating": 9, "data": []},
@@ -96,7 +96,6 @@ const starterJSON = {
         {"name": "Close-grip EZ-bar curl", "target": "Biceps", "rating": 8.9, "data": []},
         {"name": "Machine shoulder press", "target": "Shoulders", "rating": 8.9, "data": []},
         {"name": "Incline EZ-bar skullcrusher", "target": "Triceps", "rating": 8.9, "data": []},
-        {"name": "Wide-Grip Decline Barbell Bench Press", "target": "Chest", "rating": 8.9, "data": []},
         {"name": "Decline Close-Grip Bench To Skull Crusher", "target": "Triceps", "rating": 8.9, "data": []},
         {"name": "Lying Leg Curls", "target": "Hamstrings", "rating": 8.9, "data": []},
         {"name": "Cross-body hammer curl", "target": "Biceps", "rating": 8.9, "data": []},
@@ -105,7 +104,7 @@ const starterJSON = {
         {"name": "Leg Press", "target": "Quadriceps", "rating": 8.8, "data": []},
         {"name": "Stiff-Legged Dumbbell Deadlift", "target": "Hamstrings", "rating": 8.8, "data": []},
         {"name": "Cable Crossover", "target": "Chest", "rating": 8.8, "data": []},
-        {"name": "Barbell Incline Bench Press Medium-Grip", "target": "Chest", "rating": 8.8, "data": []},
+        {"name": "Barbell Incline Bench Press", "target": "Chest", "rating": 8.8, "data": []},
         {"name": "Incline Dumbbell Flyes", "target": "Chest", "rating": 8.8, "data": []},
         {"name": "Seated Cable Rows", "target": "Middle Back", "rating": 8.8, "data": []},
         {"name": "Tricep Dumbbell Kickback", "target": "Triceps", "rating": 8.8, "data": []},
@@ -476,33 +475,22 @@ const starterJSON = {
         {"name": "Single Arm Overhead Kettlebell Squat", "target": "Quadriceps", "rating": 0, "data": []},
     ],
     "programs": {
-        "PPL": {
-            "info": [
-                { "day": "Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 4 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 4 }, { "name": "Dips", "rep_range": "8-12", "sets": 4 }, { "name": "Flys", "rep_range": "8-12", "sets": 2 }] },
-                { "day": "Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 4 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 4 }] },
-                { "day": "Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 4 }] },
-                { "day": "Rest", "workouts": [] }],
-            "state": {
-                "currentDayIndex": 0,
-                "exercises": []
-            }
-        },
-        "Arnold": {
-            "info": [
-                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 2 }, { "name": "Dumbell Bicep Curls", "rep_range": "8-12", "sets": 2 }] },
-                { "day": "Rest", "workouts": [] },
-                { "day": "Arms, Shoulders, Abs", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 2 }, { "name": "Hammer Curls", "rep_range": "8-12", "sets": 2 }] },
-                { "day": "Rest", "workouts": [] }],
-            "state": {
-                "currentDayIndex": 0,
-                "exercises": []
-            }
-        },
         "Test": {
             "info": [
-                { "day": "Push", "workouts": [{ "name": "Barbell Bench Press", "rep_range": "3-6", "sets": 2 }] },
-                { "day": "Pull", "workouts": [{ "name": "Barbell Bicep Curls", "rep_range": "8-12", "sets": 2 }] },
-                { "day": "Legs", "workouts": [{ "name": "Barbell Squats", "rep_range": "3-6", "sets": 2 }] },
+                { "day": "Push", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 }] },
+                { "day": "Pull", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 }] },
+                { "day": "Legs", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 }] },
+                { "day": "Rest", "workouts": [] }],
+            "state": {
+                "currentDayIndex": 0,
+                "exercises": []
+            }
+        },
+        "Test2": {
+            "info": [
+                { "day": "Push", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 2 }] },
+                { "day": "Pull", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "8-12", "sets": 2 }] },
+                { "day": "Legs", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 2 }] },
                 { "day": "Rest", "workouts": [] }],
             "state": {
                 "currentDayIndex": 0,

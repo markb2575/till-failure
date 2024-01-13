@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Animated, Easing, Keyboard } from 'react-native';
 import { Card } from '@rneui/themed';
 import CustomCard from '../CustomCard';
-export default function ScrollWorkouts({ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown}) {
+export default function ScrollWorkouts({ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight}) {
     const animatedTextTranslation = useRef(new Animated.Value(0)).current;
     const animatedColors = useRef(Array.from({ length:  100  }, () => new Animated.Value(0))).current;
     const shakeAnimation = useRef(Array.from({ length:  100  }, () => new Animated.Value(0))).current;
@@ -20,6 +20,7 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
         inputRange: [0, 1],
         outputRange: ['#242424', '#ff0033'],
     });
+    
     const handleComplete = () => {
         const isValid = !exercises[activeDropdown].data.some(set => set.weight === null || set.reps === null || Number.isNaN(set.weight));
         if (!isValid) {
@@ -50,6 +51,10 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
             });
             return;
         }
+    
+        exercises[activeDropdown].prev_weight = exercises[activeDropdown].data[currentSet-1].weight
+        exercises[activeDropdown].prev_reps = exercises[activeDropdown].data[currentSet-1].reps
+        updateRecommendedWeight(exercises[activeDropdown].data[currentSet-1].weight, exercises[activeDropdown].data[currentSet-1].reps, exercises[activeDropdown].optimal_reps)
         Keyboard.dismiss()
         exercises[activeDropdown].complete = true;
         data.workouts.find(exercise => exercise.name === exercises[activeDropdown].name).data = [...exercises[activeDropdown].data];
@@ -81,6 +86,15 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
             setCurrentSet((current) => (
                 current - 1
             ))
+            if (currentSet - 3 < 0) {
+            
+            } else if (exercises[activeDropdown].data[currentSet-3].reps !== null && exercises[activeDropdown].data[currentSet-3].weight !== null && !Number.isNaN(exercises[activeDropdown].data[currentSet-3].weight)) {
+                exercises[activeDropdown].prev_weight = exercises[activeDropdown].data[currentSet-3].weight
+                exercises[activeDropdown].prev_reps = exercises[activeDropdown].data[currentSet-3].reps
+                updateRecommendedWeight(exercises[activeDropdown].data[currentSet-3].weight, exercises[activeDropdown].data[currentSet-3].reps, exercises[activeDropdown].optimal_reps)
+            } else {
+                setRecommendedWeight(null)
+            }
             return
         }
         animateTextTranslation(350, then = () => {
@@ -89,11 +103,21 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
             setCurrentSet((current) => (
                 current - 1
             ))
-        }
-        );
+            if (currentSet - 3 < 0) {
+            
+            } else if (exercises[activeDropdown].data[currentSet-3].reps !== null && exercises[activeDropdown].data[currentSet-3].weight !== null && !Number.isNaN(exercises[activeDropdown].data[currentSet-3].weight)) {
+                exercises[activeDropdown].prev_weight = exercises[activeDropdown].data[currentSet-3].weight
+                exercises[activeDropdown].prev_reps = exercises[activeDropdown].data[currentSet-3].reps
+                updateRecommendedWeight(exercises[activeDropdown].data[currentSet-3].weight, exercises[activeDropdown].data[currentSet-3].reps, exercises[activeDropdown].optimal_reps)
+            } else {
+                setRecommendedWeight(null)
+            }
+        });
     }
     const handleNext = () => {
         Keyboard.dismiss()
+
+        
         if (animatedTextTranslation._value !== 0) {
             setCurrentReps(exercises[activeDropdown].data[currentSet].reps === null ? "" : exercises[activeDropdown].data[currentSet].reps)
             setCurrentWeight(exercises[activeDropdown].data[currentSet].weight === null || Number.isNaN(exercises[activeDropdown].data[currentSet].weight) ? "" : exercises[activeDropdown].data[currentSet].weight)
@@ -108,8 +132,17 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
             setCurrentSet((current) => (
                 current + 1
             ))
+        });
+        // console.log(currentSet-1,exercises[activeDropdown].data[currentSet-1].reps, exercises[activeDropdown].data[currentSet-1].weight, !Number.isNaN(exercises[activeDropdown].data[currentSet-1].weight))
+        // console.log("bool",exercises[activeDropdown].data[currentSet-1].reps !== null && exercises[activeDropdown].data[currentSet-1].weight !== null && !Number.isNaN(exercises[activeDropdown].data[currentSet-1].weight))
+        if (exercises[activeDropdown].data[currentSet-1].reps !== null && exercises[activeDropdown].data[currentSet-1].weight !== null && !Number.isNaN(exercises[activeDropdown].data[currentSet-1].weight)) {
+            // console.log("prev is valid")
+            exercises[activeDropdown].prev_weight = exercises[activeDropdown].data[currentSet-1].weight
+            exercises[activeDropdown].prev_reps = exercises[activeDropdown].data[currentSet-1].reps
+            updateRecommendedWeight(exercises[activeDropdown].data[currentSet-1].weight, exercises[activeDropdown].data[currentSet-1].reps, exercises[activeDropdown].optimal_reps)
+        } else {
+            setRecommendedWeight(null)
         }
-        );
     }
     const animateTextTranslation = (toValue, then) => {
         Animated.timing(animatedTextTranslation, {
@@ -194,6 +227,8 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
                                                 paddingHorizontal: 12,
                                                 fontSize: 16,
                                             }}
+                                            placeholderTextColor={"grey"}
+                                            placeholder={recommendedWeight?String(Math.round(recommendedWeight)):""}
                                             value={String(currentWeight)}
                                             onChangeText={(text) => handleTextChange(text, type = "Weight")}
                                         />
