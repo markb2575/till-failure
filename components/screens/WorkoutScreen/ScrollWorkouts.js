@@ -214,7 +214,10 @@ export default function ScrollWorkouts({ data, exercises, notValid, animatedRota
                                 </View>
                                 <Animated.View style={{ transform: [{ translateX: animatedTextTranslation }] }}>
                                     <View style={{ marginBottom: 16, marginHorizontal: 10 }}>
-                                        <Text style={{ fontSize: 20, color: 'white', marginBottom: 8, fontWeight: 'bold' }}>Weight</Text>
+                                    <View style={{flexDirection:'row'}}>
+                                        <Text style={{ fontSize: 20, color: 'white', marginBottom: 8, fontWeight: 'bold', marginRight:4 }}>Weight</Text>
+                                        <Text style={{ fontSize: 20, color: 'white', marginBottom: 8 }}>(lbs)</Text>
+                                    </View>
                                         <TextInput
                                             keyboardType='numeric'
                                             style={{
