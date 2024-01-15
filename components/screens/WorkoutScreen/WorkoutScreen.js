@@ -12,6 +12,7 @@ export default function WorkoutScreen({ navigation }) {
     const [currentDayIndex, setCurrentDayIndex] = useState(null);
     const [exercises, setExercises] = useState(null);
     const [activeDropdown, setActiveDropdown] = useState(null)
+    const [loading, setLoading] = useState(true)
     const [currentSet, setCurrentSet] = useState(1)
     const [notValid, setNotValid] = useState([])
     const [currentWeight, setCurrentWeight] = useState("")
@@ -25,59 +26,63 @@ export default function WorkoutScreen({ navigation }) {
         setRecommendedWeight(((prevWeight * prevReps) + (30 * prevWeight)) / (optimalReps + 30))
     }
 
-    useEffect(() => {
-        if (isFocused) {
-            FileSystemCommands.setupProject().then(res => {
-                setData(res)
-                if (res.state.selectedProgram === null) return
-                setSelectedProgram(res.state.selectedProgram)
-                if (res.programs[res.state.selectedProgram].state.currentDayIndex === null) {
-                    setCurrentDay(res.programs[res.state.selectedProgram].info[0].day)
-                    setCurrentDayIndex(0)
-                    res.programs[res.state.selectedProgram].state.currentDay = res.programs[res.state.selectedProgram].info[0].day
-                    FileSystemCommands.updateWorkoutFiles(res)
-                    setData(res)
-                } else {
-                    setCurrentDay(res.programs[res.state.selectedProgram].info[res.programs[res.state.selectedProgram].state.currentDayIndex].day)
-                    setCurrentDayIndex(res.programs[res.state.selectedProgram].state.currentDayIndex)
-                }
-                if (res.programs[res.state.selectedProgram].state.exercises.length === 0 || res.programs[res.state.selectedProgram].state.exercises === null) {
-                    res.programs[res.state.selectedProgram].info.forEach((info, index) => {
-                        if (index === res.programs[res.state.selectedProgram].state.currentDayIndex) {
-                            res.programs[res.state.selectedProgram].state.exercises = []
-                            info.workouts.forEach(item => {
-                                let prevWeight = null;
-                                let prevReps = null;
-                                res.workouts.forEach(workout => {
-                                    if (workout.name === item.name) {
-                                        const lastElement = workout.data[workout.data.length - 1]
-                                        if (lastElement === undefined) return
-                                        prevWeight = lastElement.weight
-                                        prevReps = lastElement.reps
-                                    }
-                                })
-                                res.programs[res.state.selectedProgram].state.exercises.push({ 'name': item.name, 'rep_range': item.rep_range, 'sets': item.sets, 'complete': false, 'current_set': '1', 'prev_weight': null, 'prev_reps': null, "optimal_reps": (Number(item.rep_range.split('-')[0]) + Number(item.rep_range.split('-')[1])) / 2 });
-                            })
-                        }
-                    })
-                    res.programs[res.state.selectedProgram].state.exercises.forEach(exercise => {
-                        for (var i = exercise.sets; i > 0; i--) {
-                            if (exercise["data"] === undefined) {
-                                exercise["data"] = [{ "weight": null, "reps": null }]
-                            } else {
-                                exercise["data"].push({ "weight": null, "reps": null })
-                            }
-                        }
-                    })
-                }
+    useFocusEffect(useCallback(() => {
+        FileSystemCommands.setupProject().then(res => {
+
+            setData(res)
+            if (res.state.selectedProgram === null) return
+            setSelectedProgram(res.state.selectedProgram)
+            if (res.programs[res.state.selectedProgram].state.currentDayIndex === null) {
+                setCurrentDay(res.programs[res.state.selectedProgram].info[0].day)
+                setCurrentDayIndex(0)
+                res.programs[res.state.selectedProgram].state.currentDay = res.programs[res.state.selectedProgram].info[0].day
                 FileSystemCommands.updateWorkoutFiles(res)
                 setData(res)
-                setExercises(res.programs[res.state.selectedProgram].state.exercises)
-            })
-        }
-    }, [isFocused, currentDay, animatedHeights, animatedRotations])
+            } else {
+                setCurrentDay(res.programs[res.state.selectedProgram].info[res.programs[res.state.selectedProgram].state.currentDayIndex].day)
+                setCurrentDayIndex(res.programs[res.state.selectedProgram].state.currentDayIndex)
+            }
+            if (res.programs[res.state.selectedProgram].state.exercises.length === 0 || res.programs[res.state.selectedProgram].state.exercises === null) {
+                res.programs[res.state.selectedProgram].info.forEach((info, index) => {
+                    if (index === res.programs[res.state.selectedProgram].state.currentDayIndex) {
+                        res.programs[res.state.selectedProgram].state.exercises = []
+                        info.workouts.forEach(item => {
+                            let prevWeight = null;
+                            let prevReps = null;
+                            res.workouts.forEach(workout => {
+                                if (workout.name === item.name) {
+                                    const lastElement = workout.data[workout.data.length - 1]
+                                    if (lastElement === undefined) return
+                                    prevWeight = lastElement.weight
+                                    prevReps = lastElement.reps
+                                }
+                            })
+                            res.programs[res.state.selectedProgram].state.exercises.push({ 'name': item.name, 'rep_range': item.rep_range, 'sets': item.sets, 'complete': false, 'current_set': '1', 'prev_weight': null, 'prev_reps': null, "optimal_reps": (Number(item.rep_range.split('-')[0]) + Number(item.rep_range.split('-')[1])) / 2 });
+                        })
+                    }
+                })
+                res.programs[res.state.selectedProgram].state.exercises.forEach(exercise => {
+                    for (var i = exercise.sets; i > 0; i--) {
+                        if (exercise["data"] === undefined) {
+                            exercise["data"] = [{ "weight": null, "reps": null }]
+                        } else {
+                            exercise["data"].push({ "weight": null, "reps": null })
+                        }
+                    }
+                })
+            }
+            FileSystemCommands.updateWorkoutFiles(res)
+            setData(res)
+            setExercises(res.programs[res.state.selectedProgram].state.exercises)
+            setTimeout(fadeIn, 100)
+            setLoading(false)
+        })
+
+    }, [isFocused, currentDay, animatedHeights, animatedRotations]))
+
 
     const closeDropdown = (dropdownIndex) => {
+        if (dropdownIndex === null) return
         Animated.timing(animatedHeights[dropdownIndex], {
             toValue: 0,
             duration: 200,
@@ -90,7 +95,7 @@ export default function WorkoutScreen({ navigation }) {
         }).start();
     };
     const openDropdown = (dropdownIndex, exercise) => {
-        console.log("exercise", exercise)
+        // console.log("exercise", exercise)
         Animated.timing(animatedHeights[dropdownIndex], {
             toValue: 310,
             duration: 200,
@@ -102,7 +107,7 @@ export default function WorkoutScreen({ navigation }) {
             useNativeDriver: false,
         }).start();
         //if the previous set reps and weight are filled in recommended weight to reach optimal weight
-        console.log(exercise.prev_weight, exercise.prev_reps, exercise.optimal_reps)
+        // console.log(exercise.prev_weight, exercise.prev_reps, exercise.optimal_reps)
         let prevWeight = null;
         let prevReps = null;
         data.workouts.forEach(workout => {
@@ -155,12 +160,7 @@ export default function WorkoutScreen({ navigation }) {
             useNativeDriver: false,
         }).start()
     }
-    useFocusEffect(useCallback(() => {
-        console.log(selectedProgram)
 
-        if (selectedProgram === null) return
-        setTimeout(fadeIn, 100)
-    }, [selectedProgram]))
 
     const handleNextDay = () => {
         const length = Object.values(data.programs[data.state.selectedProgram].info).length
@@ -184,7 +184,7 @@ export default function WorkoutScreen({ navigation }) {
         setCurrentWeight("")
     }
     return (
-        selectedProgram && exercises ? (
+        !loading ? (selectedProgram && exercises ? (
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginTop: 50, alignSelf: 'center' }}>{currentDay}</Text>
 
@@ -212,17 +212,17 @@ export default function WorkoutScreen({ navigation }) {
 
 
                 <View style={{ marginHorizontal: 90, marginTop: 5, marginBottom: 10, }}>
-                    <CustomCard screen={<TouchableOpacity onPress={() => { setActiveDropdown(null); navigation.navigate("Programs"); fadeOut() }} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
+                    <CustomCard screen={<TouchableOpacity onPress={() => { closeDropdown(activeDropdown); setActiveDropdown(null); navigation.navigate("Programs"); fadeOut() }} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
                 </View>
             </View>
         ) : (
             <View style={{ flex: 1, justifyContent: 'center' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70, marginTop: 50, alignSelf: 'center', textAlign: 'center', }}>No Program Selected</Text>
                 <View style={{ marginHorizontal: 60 }}>
-                    <CustomCard screen={<TouchableOpacity onPress={() => { navigation.navigate("Programs"); fadeOut() }} style={{ padding: 10 }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Select Program</Text></TouchableOpacity>} />
+                    <CustomCard screen={<TouchableOpacity onPress={() => { closeDropdown(activeDropdown); navigation.navigate("Programs"); fadeOut() }} style={{ padding: 10 }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Select Program</Text></TouchableOpacity>} />
                 </View>
             </View>
 
         )
-    );
+        ) : (null));
 }
