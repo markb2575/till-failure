@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import FileSystemCommands from "../../util/FileSystemCommands"
 import { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, Easing, Keyboard } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import CustomCard from '../CustomCard';
 import ScrollWorkouts from '../WorkoutScreen/ScrollWorkouts';
 export default function WorkoutScreen({ navigation }) {
@@ -18,12 +18,11 @@ export default function WorkoutScreen({ navigation }) {
     const [currentReps, setCurrentReps] = useState("")
     const [recommendedWeight, setRecommendedWeight] = useState("")
     const isFocused = useIsFocused();
-    const animatedHeights = useRef(Array.from({ length:  100  }, () => new Animated.Value(0))).current;
-    const animatedRotations = useRef(Array.from({ length:  100  }, () => new Animated.Value(1))).current;
-
+    const animatedHeights = useRef(Array.from({ length: 100 }, () => new Animated.Value(0))).current;
+    const animatedRotations = useRef(Array.from({ length: 100 }, () => new Animated.Value(1))).current;
 
     const updateRecommendedWeight = (prevWeight, prevReps, optimalReps) => {
-        setRecommendedWeight(((prevWeight*prevReps)+(30*prevWeight))/(optimalReps + 30))
+        setRecommendedWeight(((prevWeight * prevReps) + (30 * prevWeight)) / (optimalReps + 30))
     }
 
     useEffect(() => {
@@ -57,7 +56,7 @@ export default function WorkoutScreen({ navigation }) {
                                         prevReps = lastElement.reps
                                     }
                                 })
-                                res.programs[res.state.selectedProgram].state.exercises.push({ 'name': item.name, 'rep_range': item.rep_range, 'sets': item.sets, 'complete': false, 'current_set': '1', 'prev_weight': null, 'prev_reps': null, "optimal_reps": (Number(item.rep_range.split('-')[0]) + Number(item.rep_range.split('-')[1]))/2 });
+                                res.programs[res.state.selectedProgram].state.exercises.push({ 'name': item.name, 'rep_range': item.rep_range, 'sets': item.sets, 'complete': false, 'current_set': '1', 'prev_weight': null, 'prev_reps': null, "optimal_reps": (Number(item.rep_range.split('-')[0]) + Number(item.rep_range.split('-')[1])) / 2 });
                             })
                         }
                     })
@@ -91,7 +90,7 @@ export default function WorkoutScreen({ navigation }) {
         }).start();
     };
     const openDropdown = (dropdownIndex, exercise) => {
-        console.log("exercise",exercise)
+        console.log("exercise", exercise)
         Animated.timing(animatedHeights[dropdownIndex], {
             toValue: 310,
             duration: 200,
@@ -103,7 +102,7 @@ export default function WorkoutScreen({ navigation }) {
             useNativeDriver: false,
         }).start();
         //if the previous set reps and weight are filled in recommended weight to reach optimal weight
-        console.log(exercise.prev_weight,exercise.prev_reps,exercise.optimal_reps)
+        console.log(exercise.prev_weight, exercise.prev_reps, exercise.optimal_reps)
         let prevWeight = null;
         let prevReps = null;
         data.workouts.forEach(workout => {
@@ -114,11 +113,11 @@ export default function WorkoutScreen({ navigation }) {
                 prevReps = lastElement.reps
             }
         })
-        updateRecommendedWeight(prevWeight,prevReps,exercise.optimal_reps)
+        updateRecommendedWeight(prevWeight, prevReps, exercise.optimal_reps)
         setActiveDropdown(dropdownIndex);
         setCurrentSet(1);
-        setCurrentReps(exercise.data[0].reps!==null?exercise.data[0].reps:"");
-        setCurrentWeight(exercise.data[0].weight!==null?exercise.data[0].weight:"");
+        setCurrentReps(exercise.data[0].reps !== null ? exercise.data[0].reps : "");
+        setCurrentWeight(exercise.data[0].weight !== null ? exercise.data[0].weight : "");
     };
     const holdAnimation = useRef(new Animated.Value(0)).current;
     const handleHold = () => {
@@ -140,6 +139,29 @@ export default function WorkoutScreen({ navigation }) {
             useNativeDriver: false,
         }).start()
     };
+
+    const animatedFadeIn = useRef(new Animated.Value(0)).current;
+    const fadeOut = () => {
+        Animated.timing(animatedFadeIn, {
+            toValue: 0,
+            duration: 250,
+            useNativeDriver: false,
+        }).start()
+    }
+    const fadeIn = () => {
+        Animated.timing(animatedFadeIn, {
+            toValue: 1,
+            duration: 150,
+            useNativeDriver: false,
+        }).start()
+    }
+    useFocusEffect(useCallback(() => {
+        console.log(selectedProgram)
+
+        if (selectedProgram === null) return
+        setTimeout(fadeIn, 100)
+    }, [selectedProgram]))
+
     const handleNextDay = () => {
         const length = Object.values(data.programs[data.state.selectedProgram].info).length
         if (currentDayIndex === length - 1) {
@@ -165,10 +187,11 @@ export default function WorkoutScreen({ navigation }) {
         selectedProgram && exercises ? (
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginTop: 50, alignSelf: 'center' }}>{currentDay}</Text>
-                {/* {console.log("here")}
-                {exercises.forEach(exercise=>console.log(exercise.name))} */}
+
                 {!exercises.every(exercise => exercise.complete === true) ?
-                    <ScrollWorkouts {...{ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight }} /> :
+                    <Animated.View style={{ opacity: animatedFadeIn, flex: 1, justifyContent: 'flex-start' }}>
+                        <ScrollWorkouts {...{ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight }} />
+                    </Animated.View> :
                     <View style={{ marginVertical: 30 }}>
                         {currentDay === "Rest" ?
                             <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 20, alignSelf: 'center', textAlign: 'center', marginHorizontal: 40, }}>Enjoy your Rest Day</Text> :
@@ -187,15 +210,16 @@ export default function WorkoutScreen({ navigation }) {
                     </View>
                 }
 
+
                 <View style={{ marginHorizontal: 90, marginTop: 5, marginBottom: 10, }}>
-                    <CustomCard screen={<TouchableOpacity onPress={() => { setActiveDropdown(null); navigation.navigate("Programs") }} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
+                    <CustomCard screen={<TouchableOpacity onPress={() => { setActiveDropdown(null); navigation.navigate("Programs"); fadeOut() }} style={{ padding: 10 }}><Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Switch Program</Text></TouchableOpacity>} />
                 </View>
             </View>
         ) : (
             <View style={{ flex: 1, justifyContent: 'center' }}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginHorizontal: 70, marginTop: 50, alignSelf: 'center', textAlign: 'center', }}>No Program Selected</Text>
                 <View style={{ marginHorizontal: 60 }}>
-                    <CustomCard screen={<TouchableOpacity onPress={() => { navigation.navigate("Programs") }} style={{ padding: 10 }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Select Program</Text></TouchableOpacity>} />
+                    <CustomCard screen={<TouchableOpacity onPress={() => { navigation.navigate("Programs"); fadeOut() }} style={{ padding: 10 }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5, alignSelf: 'center' }}>Select Program</Text></TouchableOpacity>} />
                 </View>
             </View>
 
