@@ -506,7 +506,7 @@ const starterJSON = {
 const FileSystemCommands = {
     async setupProject() {
         if ((await FileSystem.getInfoAsync(dir + "workouts.json")).exists) {
-            // this.createWorkoutFiles() //uncomment to reset user data to starterJSON
+            //this.createWorkoutFiles() //uncomment to reset user data to starterJSON
             return this.getWorkouts()
         } else {
             this.createWorkoutFiles()

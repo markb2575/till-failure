@@ -7,7 +7,7 @@ import { setStatusBarBackgroundColor } from 'expo-status-bar';
 import { ListItem, Card } from '@rneui/themed';
 import CustomCard from '../CustomCard';
 import ScrollPrograms from './ScrollPrograms';
-import CustomHeader from '../CustomHeader';
+import CustomHeader from '../CustomHeader';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 
 export default function SelectWorkoutScreen({ navigation }) {
     const [data, setData] = useState(null);
