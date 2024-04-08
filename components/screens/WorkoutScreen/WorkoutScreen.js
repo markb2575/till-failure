@@ -13,7 +13,7 @@ export default function WorkoutScreen({ navigation }) {
     const [exercises, setExercises] = useState(null);
     const [activeDropdown, setActiveDropdown] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [currentSet, setCurrentSet] = useState(1)
+    // const [currentSet, setCurrentSet] = useState(1)
     const [notValid, setNotValid] = useState([])
     const [currentWeight, setCurrentWeight] = useState("")
     const [currentReps, setCurrentReps] = useState("")
@@ -22,15 +22,35 @@ export default function WorkoutScreen({ navigation }) {
     const animatedHeights = useRef(Array.from({ length: 100 }, () => new Animated.Value(0))).current;
     const animatedRotations = useRef(Array.from({ length: 100 }, () => new Animated.Value(1))).current;
 
-    const updateRecommendedWeight = (prevWeight, prevReps, optimalReps) => {
-        setRecommendedWeight(((prevWeight * prevReps) + (30 * prevWeight)) / (optimalReps + 30))
+    const updateRecommendedWeight = (currentWeight, currentReps, optimalReps, index, dropdownIndex) => {
+        console.log("hi",index)
+        if (currentWeight === null || currentReps === null) {
+            if (index !== -1) {
+                const maxLen = data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data.length
+                if (index + 1 === maxLen) return
+                data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data[index+1].recommended_weight = null
+                
+            } else {
+                data.programs[data.state.selectedProgram].state.exercises[dropdownIndex].data[index+1].recommended_weight = null
+            }
+            return
+        }
+        if (index !== -1) {
+            const maxLen = data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data.length
+            if (index + 1 === maxLen) return
+            data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data[index+1].recommended_weight = ((currentWeight * currentReps) + (30 * currentWeight)) / (optimalReps + 30)
+        } else {
+            data.programs[data.state.selectedProgram].state.exercises[dropdownIndex].data[index+1].recommended_weight = ((currentWeight * currentReps) + (30 * currentWeight)) / (optimalReps + 30)
+        }
     }
 
     useFocusEffect(useCallback(() => {
         FileSystemCommands.setupProject().then(res => {
-
             setData(res)
-            if (res.state.selectedProgram === null) return
+            if (res.state.selectedProgram === null) {
+                    setLoading(false)
+                    return null
+                };
             setSelectedProgram(res.state.selectedProgram)
             if (res.programs[res.state.selectedProgram].state.currentDayIndex === null) {
                 setCurrentDay(res.programs[res.state.selectedProgram].info[0].day)
@@ -64,9 +84,9 @@ export default function WorkoutScreen({ navigation }) {
                 res.programs[res.state.selectedProgram].state.exercises.forEach(exercise => {
                     for (var i = exercise.sets; i > 0; i--) {
                         if (exercise["data"] === undefined) {
-                            exercise["data"] = [{ "weight": null, "reps": null }]
+                            exercise["data"] = [{ "weight": null, "reps": null, "recommended_weight": null }]
                         } else {
-                            exercise["data"].push({ "weight": null, "reps": null })
+                            exercise["data"].push({ "weight": null, "reps": null, "recommended_weight": null })
                         }
                     }
                 })
@@ -83,27 +103,29 @@ export default function WorkoutScreen({ navigation }) {
 
     const closeDropdown = (dropdownIndex) => {
         if (dropdownIndex === null) return
+        // console.log(animatedHeights[dropdownIndex])
         Animated.timing(animatedHeights[dropdownIndex], {
             toValue: 0,
-            duration: 200,
+            duration: 150,
             useNativeDriver: false,
         }).start();
         Animated.timing(animatedRotations[dropdownIndex], {
             toValue: 1,
-            duration: 200,
+            duration: 150,
             useNativeDriver: false,
         }).start();
     };
     const openDropdown = (dropdownIndex, exercise) => {
         // console.log("exercise", exercise)
+        // console.log("in opendropdown")
         Animated.timing(animatedHeights[dropdownIndex], {
             toValue: 310,
-            duration: 200,
+            duration: 150,
             useNativeDriver: false,
         }).start();
         Animated.timing(animatedRotations[dropdownIndex], {
             toValue: -1,
-            duration: 200,
+            duration: 150,
             useNativeDriver: false,
         }).start();
         //if the previous set reps and weight are filled in recommended weight to reach optimal weight
@@ -118,11 +140,13 @@ export default function WorkoutScreen({ navigation }) {
                 prevReps = lastElement.reps
             }
         })
-        updateRecommendedWeight(prevWeight, prevReps, exercise.optimal_reps)
-        setActiveDropdown(dropdownIndex);
-        setCurrentSet(1);
-        setCurrentReps(exercise.data[0].reps !== null ? exercise.data[0].reps : "");
-        setCurrentWeight(exercise.data[0].weight !== null ? exercise.data[0].weight : "");
+        // console.log(prevWeight, prevReps, exercise.optimal_reps)
+        updateRecommendedWeight(prevWeight, prevReps, exercise.optimal_reps, -1, dropdownIndex)
+        // setActiveDropdown(dropdownIndex);
+        // setCurrentSet(1);
+        // setCurrentReps(exercise.data[0].reps !== null ? exercise.data[0].reps : "");
+        // setCurrentWeight(exercise.data[0].weight !== null ? exercise.data[0].weight : "");
+        // console.log("exit opendropdown")
     };
     const holdAnimation = useRef(new Animated.Value(0)).current;
     const handleHold = () => {
@@ -185,12 +209,12 @@ export default function WorkoutScreen({ navigation }) {
     }
     return (
         !loading ? (selectedProgram && exercises ? (
-            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+            <View style={{ flex: 1, justifyContent: 'space-between' }} onTouchStart={() => Keyboard.dismiss()}>
                 <Text style={{ fontSize: 40, fontWeight: 'bold', color: 'white', marginBottom: 15, marginTop: 50, alignSelf: 'center' }}>{currentDay}</Text>
 
                 {!exercises.every(exercise => exercise.complete === true) ?
                     <Animated.View style={{ opacity: animatedFadeIn, flex: 1, justifyContent: 'flex-start' }}>
-                        <ScrollWorkouts {...{ data, exercises, notValid, animatedRotations, animatedHeights, currentSet, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setCurrentSet, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight }} />
+                        <ScrollWorkouts {...{ data, exercises, setExercises, notValid, animatedRotations, animatedHeights, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight }} />
                     </Animated.View> :
                     <View style={{ marginVertical: 30 }}>
                         {currentDay === "Rest" ?

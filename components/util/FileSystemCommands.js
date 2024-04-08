@@ -477,7 +477,7 @@ const starterJSON = {
     "programs": {
         "Test": {
             "info": [
-                { "day": "Push", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 }] },
+                { "day": "Push", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 8 }] },
                 { "day": "Pull", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 }] },
                 { "day": "Legs", "workouts": [{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 },{ "name": "Dumbbell Bench Press", "rep_range": "3-6", "sets": 3 }] },
                 { "day": "Rest", "workouts": [] }],
@@ -506,7 +506,7 @@ const starterJSON = {
 const FileSystemCommands = {
     async setupProject() {
         if ((await FileSystem.getInfoAsync(dir + "workouts.json")).exists) {
-            //this.createWorkoutFiles() //uncomment to reset user data to starterJSON
+            // this.createWorkoutFiles() //uncomment to reset user data to starterJSON
             return this.getWorkouts()
         } else {
             this.createWorkoutFiles()

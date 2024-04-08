@@ -9,13 +9,12 @@ const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const HomeTabs = () => {
-    let workout;
-    let progress;
-    useEffect(() => {
-        workout = require('../../assets/workout_icon.png')
-        progress = require('../../assets/progress_icon.png')
-
-    }, []);
+    // let workout;
+    // let progress;
+    // useEffect(() => {
+    //     workout = require('../../assets/workout_icon.png')
+    //     progress = require('../../assets/progress_icon.png')
+    // }, []);
 
     return (
         <Tab.Navigator
@@ -50,8 +49,8 @@ const HomeTabs = () => {
             tabBarPosition="bottom"
 
         >
-            <Tab.Screen name="Workout" component={WorkoutScreen} options={{ tabBarLabel: "Workout", tabBarIcon: ({ color, size, focused }) => (<Image source={workout} style={{ resizeMode: 'contain', flex: 1, tintColor: focused ? 'white' : '#575757', alignSelf: 'center' }} />) }} />
-            <Tab.Screen name="Progress" component={ProgressScreen} options={{ tabBarLabel: "Progress", tabBarIcon: ({ color, size, focused }) => (<Image source={progress} style={{ resizeMode: 'contain', flex: 1, tintColor: focused ? 'white' : '#575757', alignSelf: 'center' }} />) }} />
+            <Tab.Screen name="Workout" component={WorkoutScreen} options={{ tabBarLabel: "Workout", tabBarIcon: ({ color, size, focused }) => (<Image source={require('../../assets/workout_icon.png')} style={{ resizeMode: 'contain', flex: 1, tintColor: focused ? 'white' : '#575757', alignSelf: 'center' }} />) }} />
+            <Tab.Screen name="Progress" component={ProgressScreen} options={{ tabBarLabel: "Progress", tabBarIcon: ({ color, size, focused }) => (<Image source={require('../../assets/progress_icon.png')} style={{ resizeMode: 'contain', flex: 1, tintColor: focused ? 'white' : '#575757', alignSelf: 'center' }} />) }} />
         </Tab.Navigator>
     )
 
