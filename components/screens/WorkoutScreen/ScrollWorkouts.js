@@ -494,8 +494,8 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                                         <Card.Divider style={{ marginBottom: 30, }} width={2} color={"grey"} />
 
 
-                                        {/* {activeDropdown != null && console.log("updating", currentSet)} */}
-                                        {activeDropdown != null ?
+                                        {activeDropdown != null && console.log("updating", currentSet)}
+                                        {activeDropdown != null && currentSet < exercises[activeDropdown].data.length?
 
                                             <FlatList
                                                 getItemLayout={(data, index) => (
