@@ -351,7 +351,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                                         <Card.Divider style={{ marginBottom: 30, }} width={2} color={"grey"} />
 
 
-                                        {activeDropdown != null && console.log("updating", currentSet)}
+                                        {/* {activeDropdown != null && console.log("updating", currentSet)} */}
                                         {activeDropdown != null ?
 
                                             <FlatList

@@ -23,7 +23,7 @@ export default function WorkoutScreen({ navigation }) {
     const animatedRotations = useRef(Array.from({ length: 100 }, () => new Animated.Value(1))).current;
 
     const updateRecommendedWeight = (currentWeight, currentReps, optimalReps, index, dropdownIndex) => {
-        console.log("hi",index)
+        // console.log("hi",index)
         if (currentWeight === null || currentReps === null) {
             if (index !== -1) {
                 const maxLen = data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data.length

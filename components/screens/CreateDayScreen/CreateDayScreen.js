@@ -52,7 +52,7 @@ export default function CreateDayScreen({ navigation, route}) {
 
     return (
             <View style={{ flex: 1 }}>
-                {console.log(route.params)}
+                {/* {console.log(route.params)} */}
                 <CustomHeader navigation={navigation} leftNavigate={"CreateWorkout"} leftImage={<Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 26, height: 26 }} />} titleText={"Create Day"} />
                 <CustomCard marginRight={0} marginTop={0} screen={
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
