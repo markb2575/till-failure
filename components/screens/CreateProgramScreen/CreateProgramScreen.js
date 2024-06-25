@@ -1,5 +1,5 @@
-import { useState, useEffect, React } from 'react';
-import { View, Text, setText, Button, Image, ScrollView, Dimensions, TouchableOpacity, TextInput, Alert, Vibration } from 'react-native';
+import { useState, useEffect, React, useRef } from 'react';
+import { View, Text, setText, Button, Image, ScrollView, Dimensions, TouchableOpacity, TextInput, Alert, Vibration, Animated } from 'react-native';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import FileSystemCommands from "../../util/FileSystemCommands"
@@ -14,6 +14,8 @@ export default function CreateProgramScreen({ navigation }) {
     const isFocused = useIsFocused();
     const [totalDays, setTotalDays] = useState(1);
     const [programName, setProgramName] = useState('');
+    const animatedHeights = useRef(Array.from({ length: 100 }, () => new Animated.Value(0))).current;
+    const [activeDropdown, setActiveDropdown] = useState(null)
     useEffect(() => {
         if (isFocused) {
             // need a way to save and load data when entering into createdayscreen
@@ -35,7 +37,23 @@ export default function CreateProgramScreen({ navigation }) {
         }
     }, [isFocused, programName])
     //get files to check if initial route name should be select workout or workout page
-
+    const handleToggleDropdown = async (exercise, index) => {
+        // Keyboard.dismiss();
+        // console.log("prev",currentSets)
+        // scrollX.setValue(currentSets[index] * 327.5)
+        if (index === activeDropdown) { // closing dropdown that is open
+            closeDropdown(index);
+            setActiveDropdown(null);
+        } else {
+            if (activeDropdown !== null) { // opening dropdown when one is open
+                closeDropdown(activeDropdown);
+                await sleep(200)
+            }
+            setActiveDropdown(index);
+            openDropdown(index, exercise);
+        }
+        // console.log("new",currentSets)
+    };
     const addDay = (oldDays) => {
         setTotalDays(prev => prev + 1)
         setProgram(prevProgram => ({
@@ -61,12 +79,31 @@ export default function CreateProgramScreen({ navigation }) {
         }));
         // setTotalDays(prev => prev - 1);
     };
-    
+    const verifySave = () => {
+        console.log("verifying save")
+    }
 
+    const closeDropdown = (dropdownIndex) => {
+        if (dropdownIndex === null) return
+        Animated.timing(animatedHeights[dropdownIndex], {
+            toValue: 0,
+            duration: 150,
+            useNativeDriver: false,
+        }).start();
+    };
+    const openDropdown = (dropdownIndex) => {
+
+        Animated.timing(animatedHeights[dropdownIndex], {
+            toValue: 310,
+            duration: 150,
+            useNativeDriver: false,
+        }).start();
+
+    };
 
     return (
         !data || !program ? (null) : (
-            
+
             <View style={{ flex: 1 }}>
                 <CustomHeader navigation={navigation} leftNavigate={"Programs"} leftImage={<Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 26, height: 26 }} />} titleText={"Create Program"} />
                 <CustomCard styles={{ padding: 10 }} screen={
@@ -84,39 +121,34 @@ export default function CreateProgramScreen({ navigation }) {
                     <ScrollView
                         style={{ borderRadius: 10, margin: 15, padding: 0 }}
                     >
-
                         {program[programName] && program[programName].info.map((item, index) => (
                             <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, padding: 10 }} screen={
-                                <View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <TouchableOpacity onPress={() => navigation.navigate("CreateDay", { day: item })} style={{ marginLeft: 15 }}>
-                                        <View>
+                                <>
+                                    <TouchableOpacity onPress={() => handleToggleDropdown(item, index)} style={{ flexDirection: "row", flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <View style={{ marginLeft: 15 }}>
                                             <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', alignSelf: 'center' }}>{item.day}</Text>
                                         </View>
+                                        <TouchableOpacity onLongPress={() => deleteDay(index)} style={{ marginRight: 13.5 }}>
+                                            <View style={{ padding: 10, borderRadius: 10 }}>
+                                                <Image source={require('../../../assets/trash.png')} style={{ width: 25, height: 30 }} />
+                                            </View>
+                                        </TouchableOpacity>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onLongPress={() => deleteDay(index)} style={{ marginRight: 13.5 }}>
-                                        <View style={{ padding: 10, borderRadius: 10 }}>
-                                            <Image source={require('../../../assets/trash.png')} style={{ width: 25, height: 30 }} />
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
+                                    <Animated.View style={{ paddingHorizontal: 16, height: animatedHeights[index] === undefined ? 0 : animatedHeights[index], overflow: 'hidden' }}>
+                                        <Card.Divider style={{ marginBottom: 30, marginTop: 10 }} width={2} color={"grey"} />
+                                    </Animated.View>
+                                </>
                             } />
-                        ))}
 
-                        {/* <CustomCard styles={{ margin: 0 }} screen={ */}
-                            <TouchableOpacity onPress={() => addDay(totalDays)} style={{ padding: 12 }}>
-                                {/* <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}> */}
-                                    {/* <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', margin: 5, marginLeft: 15 }}>Add Day</Text> */}
-                                    <Image source={require('../../../assets/plus.png')} tintColor={'white'} style={{ width: 40, height: 40, alignSelf: "center", borderRadius: 30 }} ></Image>
-                                {/* </View> */}
-                            </TouchableOpacity>
-                        {/* } /> */}
+                        ))}
+                        <TouchableOpacity onPress={() => addDay(totalDays)} style={{ padding: 12 }}>
+                            <Image source={require('../../../assets/plus.png')} tintColor={'white'} style={{ width: 40, height: 40, alignSelf: "center", borderRadius: 30 }} ></Image>
+                        </TouchableOpacity>
                     </ScrollView>
                 </View>
-
-
                 <View style={{ position: 'absolute', bottom: 40, right: 0, left: 0 }}>
                     <CustomCard screen={
-                        <TouchableOpacity onPress={() => Alert.alert('save pressed')}  /*save to workout*/ style={{ padding: 10, marginHorizontal: 16.25 }}>
+                        <TouchableOpacity onPress={verifySave} style={{ padding: 10, marginHorizontal: 16.25 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                 <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', margin: 5 }}>Save</Text>
                             </View>

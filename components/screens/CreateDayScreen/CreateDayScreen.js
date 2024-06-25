@@ -14,7 +14,9 @@ export default function CreateDayScreen({ navigation, route}) {
     const isFocused = useIsFocused();
     const [totalDays, setTotalDays] = useState(1);
     const [dayName, setDayName] = useState('');
+    
     useEffect(() => {
+        console.log(route.params.day)
         if (isFocused) {
             FileSystemCommands.setupProject().then(res => {
                 setData(res)

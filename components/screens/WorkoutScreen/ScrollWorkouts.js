@@ -117,7 +117,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
 
 
 
-    const Indicator = ({ scrollX, flatListRef}) => {
+    const Indicator = ({ scrollX }) => {
 
         if (activeDropdown === null) return
         // console.log("scrollX", scrollX)
@@ -165,8 +165,9 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                     return (
                         <TouchableOpacity key={i} onPress={() => {
                             // const flatListRef = flatListRefs.current[activeDropdown];
-                            if (flatListRef) {
-                                flatListRef.current.scrollToIndex({ index: i, animated: true});
+                            if (flatListRefs) {
+                                flatListRefs.current[activeDropdown].scrollToIndex({ index: i, animated: true });
+                                currentSets.current[activeDropdown] = i
                             }
                         }}>
                             <Animated.View style={{ transform: [{ scale: scale }, { translateX: translate }], opacity: opacity, height: 5, width: 5, borderRadius: 5, margin: 10, backgroundColor: "#ffffff" }}></Animated.View>
@@ -176,21 +177,24 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
             </View>
         );
     };
-    const [scrolling, setScrolling] = useState(false);
 
-    const renderItem = ({ item, index }, shakeAnimation, animatedColors, currentSet, flatListRef) => {
-        // console.log("in render item", currentSet)
+
+    const renderItem = ({ item, index }, shakeAnimation, animatedColors, scrolling) => {
+        // const flatListRef = flatListRefs.current[activeDropdownIndex]
+        // console.log(activeDropdownIndex)
         return (
             <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, marginHorizontal: 30 }}>
                     <TouchableOpacity onPress={() => {
 
                         // Keyboard.dismiss()
-                        if (currentSet === 0) return
+                        if (currentSets.current[activeDropdown] === 0) return
                         // const flatListRef = flatListRefs.current[activeDropdown];
-                        if (flatListRef) {
+                        if (flatListRefs) {
                             // console.log(currentSets[activeDropdown])
-                            flatListRef.current.scrollToIndex({ index: currentSet - 1, animated: true });
+                            console.log("left", currentSets.current[activeDropdown])
+                            flatListRefs.current[activeDropdown].scrollToIndex({ index: currentSets.current[activeDropdown] - 1, animated: true });
+                            currentSets.current[activeDropdown] -= 1
                         }
                         // setTimeout(() => { setCurrentSet(currentSet - 1) }, 50)
                     }} style={{ padding: 15, opacity: index + 1 === 1 ? .2 : 1 }}>
@@ -200,16 +204,18 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                     {index + 1 < exercises[activeDropdown].sets ?
                         <TouchableOpacity onPress={() => {
                             // Keyboard.dismiss()
-                            
+
                             // const flatListRef = flatListRefs.current[activeDropdown];
-                            if (flatListRef) {
-                                flatListRef.current.scrollToIndex({ index: currentSet + 1, animated: true });
+                            if (flatListRefs) {
+                                console.log("right", currentSets.current[activeDropdown])
+                                flatListRefs.current[activeDropdown].scrollToIndex({ index: currentSets.current[activeDropdown] + 1, animated: true });
+                                currentSets.current[activeDropdown] += 1
                             }
                             // setTimeout(() => { setCurrentSet(currentSet + 1) }, 50)
                         }} style={{ padding: 15 }}>
                             <Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] }} />
                         </TouchableOpacity> :
-                        <TouchableOpacity onPress={() => handleComplete(animatedColors, shakeAnimation, currentSet)} style={{ padding: 15, opacity: notValid.includes(index + 1) ? .2 : 1 }} disabled={notValid.includes(index + 1) ? true : false}>
+                        <TouchableOpacity onPress={() => handleComplete(animatedColors, shakeAnimation, currentSets.current[activeDropdown])} style={{ padding: 15, opacity: notValid.includes(index + 1) ? .2 : 1 }} disabled={notValid.includes(index + 1) ? true : false}>
                             <Image source={require('../../../assets/check-mark.png')} tintColor={'white'} style={{ width: 30, height: 30 }} />
                         </TouchableOpacity>
                     }
@@ -268,7 +274,6 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
 
     // const [currentSets, setCurrentSets] = useState(Array.from({ length: exercises.length }, () => 0));
 
-    const [prevScrollDirection, setPrevScrollDirection] = useState(null)
     // const handleScrollEnd = () => {
     //     setScrolling(false);
     // };
@@ -291,7 +296,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
     //         return newSets;
     //     });
     // };
-    const onScroll = (event, setCurrentSet) => {
+    const onScroll = (event, index) => {
         // setScrolling(true)
         const scrollOffset = event.nativeEvent.contentOffset.x
         // console.log(scrollOffset)
@@ -303,88 +308,125 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
 
 
         // Update currentSets based on the visibleItemIndex
-        setCurrentSet(visibleItemIndex)
+        currentSets.current[index] = visibleItemIndex
+        // setCurrentSet(index, visibleItemIndex)
     };
 
+    const [scrolling, setScrolling] = useState(false);
+
+    // const flatListRef = useRef()
+    // const scrollX = useRef(new Animated.Value(0)).current
+    // const animatedColors = useRef(new Animated.Value(0)).current;
+    // const shakeAnimation = useRef(new Animated.Value(0)).current;
+    // const [currentSet, setCurrentSet] = useState(0);
+    // console.log(exercises.length)
+    // const flatListRefs = Array.from({ length: exercises.length }, () => createRef());
+    // const scrollXValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0))).current;
+    // const animatedColorsValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0))).current;
+    // const shakeAnimationValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0))).current;
+    // const [currentSets, setCurrentSets] = useState(Array.from({ length: exercises.length }, () => 0));
+    // const setCurrentSet = (index, newValue) => {
+    //     setCurrentSets(prevSets => {
+    //         const newSets = [...prevSets];
+    //         newSets[index] = newValue;
+    //         return newSets;
+    //     });
+    // };
+    const flatListRefs = useRef(Array.from({ length: exercises.length }, () => null));
+    const scrollXValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0)));
+    const animatedColorsValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0)));
+    const shakeAnimationValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0)));
+    const currentSets = useRef(Array.from({ length: exercises.length }, () => 0));
+
+    useEffect(() => {
+        // Initialize arrays when exercises change
+        flatListRefs.current = Array.from({ length: exercises.length }, () => null)
+        scrollXValues.current = Array.from({ length: exercises.length }, () => new Animated.Value(0))
+        animatedColorsValues.current = Array.from({ length: exercises.length }, () => new Animated.Value(0))
+        shakeAnimationValues.current = Array.from({ length: exercises.length }, () => new Animated.Value(0))
+        currentSets.current = Array.from({ length: exercises.length }, () => 0)
+
+    }, [exercises]);
 
     return (
-        <KeyboardAvoidingView behavior="position" enabled keyboardVerticalOffset={125}>
-            <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }} keyboardShouldPersistTaps='always'>
-                <View style={{ marginBottom: -15 }}>
-                    {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => {
-                        const flatListRef = useRef()
-                        {/* useEffect(() => {
-                            flatListRefs.current = exercises.map(() => createRef());
-                        }, [exercises]); */}
-                        const scrollX = useRef(new Animated.Value(0)).current
-                        const animatedColors = useRef(new Animated.Value(0)).current;
-                        const shakeAnimation = useRef(new Animated.Value(0)).current;
-                        const backgroundColorInterpolation = animatedColors.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: ['#242424', '#ff0033'],
-                        });
-                        const [currentSet, setCurrentSet] = useState(0);
-                        return (
-                            <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation : '#242424', transform: [{ translateY: shakeAnimation }] }} screen={
-                                <View>
-                                    <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
-                                        <View>
-                                            <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white', margin: 5 }}>{exercise.name}</Text>
-                                            <Text style={{ fontSize: 20, color: 'grey', margin: 5 }}>{exercise.sets} sets of {exercise.rep_range} Reps</Text>
-                                        </View>
-                                        <Animated.Image
-                                            source={require('../../../assets/back.png')}
-                                            style={{
-                                                width: 30,
-                                                height: 30,
-                                                transform: [
-                                                    { rotate: "-90deg" },
-                                                    { scaleX: animatedRotations[index]?.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) },
-                                                ],
-                                                tintColor: 'white',
-                                                marginRight: 15,
-                                            }}
-                                        />
-                                    </TouchableOpacity>
+        exercises.length === currentSets.current.length ? (
+            <KeyboardAvoidingView behavior="position" enabled keyboardVerticalOffset={125}>
+                <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }} keyboardShouldPersistTaps='always'>
+                    <View style={{ marginBottom: -15 }}>
+                        {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => {
+                            const flatListRef = flatListRefs.current[index]
+                            const scrollX = scrollXValues.current[index]
+                            const animatedColors = animatedColorsValues.current[index]
+                            const shakeAnimation = shakeAnimationValues.current[index]
+                            const currentSet = currentSets.current[index]
 
-                                    <Animated.View style={{ paddingHorizontal: 16, height: animatedHeights[index] === undefined ? 0 : animatedHeights[index], overflow: 'hidden' }}>
-                                        <Card.Divider style={{ marginBottom: 30, }} width={2} color={"grey"} />
+                            const backgroundColorInterpolation = animatedColors.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: ['#242424', '#ff0033'],
+                            });
 
-
-                                        {/* {activeDropdown != null && console.log("updating", currentSet)} */}
-                                        {activeDropdown != null ?
-
-                                            <FlatList
-                                                getItemLayout={(data, index) => (
-                                                    { length: 327.5, offset: 327.5 * index, index }
-                                                )}
-                                                data={exercises[activeDropdown].data}
-                                                ref={flatListRef}
-                                                initialScrollIndex={currentSet}
-                                                keyExtractor={(item, index) => `${index}_${activeDropdown}`}
-                                                onMomentumScrollEnd={(event) => onScroll(event, setCurrentSet)}
-                                                keyboardShouldPersistTaps='always'
-                                                renderItem={({ item, index }) => renderItem({ item, index }, shakeAnimation, animatedColors, currentSet, flatListRef)}
-                                                horizontal
-                                                onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
-                                                showsHorizontalScrollIndicator={false}
-                                                pagingEnabled
-                                                nestedScrollEnabled
-                                                initialNumToRender={2}
-                                                maxToRenderPerBatch={2}
-                                                windowSize={2}
-                                                decelerationRate={"normal"}
-                                                disableIntervalMomentum={true}
+                            return (
+                                <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation : '#242424', transform: [{ translateY: shakeAnimation }] }} screen={
+                                    <View>
+                                        <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
+                                            <View>
+                                                <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white', margin: 5 }}>{exercise.name}</Text>
+                                                <Text style={{ fontSize: 20, color: 'grey', margin: 5 }}>{exercise.sets} sets of {exercise.rep_range} Reps</Text>
+                                            </View>
+                                            <Animated.Image
+                                                source={require('../../../assets/back.png')}
+                                                style={{
+                                                    width: 30,
+                                                    height: 30,
+                                                    transform: [
+                                                        { rotate: "-90deg" },
+                                                        { scaleX: animatedRotations[index]?.interpolate({ inputRange: [-1, 1], outputRange: [-1, 1] }) },
+                                                    ],
+                                                    tintColor: 'white',
+                                                    marginRight: 15,
+                                                }}
                                             />
-                                            : (null)}
-                                        <Indicator scrollX={scrollX} flatListRef={flatListRef} />
-                                    </Animated.View>
-                                </View>
-                            } />
-                        )
-                    })}
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                                        </TouchableOpacity>
+
+                                        <Animated.View style={{ paddingHorizontal: 16, height: animatedHeights[index] === undefined ? 0 : animatedHeights[index], overflow: 'hidden' }}>
+                                            <Card.Divider style={{ marginBottom: 30, }} width={2} color={"grey"} />
+
+
+                                            {/* {activeDropdown != null && console.log("updating", currentSet)} */}
+                                            {activeDropdown === index ?
+
+                                                <FlatList
+                                                    getItemLayout={(data, index) => (
+                                                        { length: 327.5, offset: 327.5 * index, index }
+                                                    )}
+                                                    data={exercises[activeDropdown].data}
+                                                    ref={(ref) => flatListRefs.current[index] = ref}
+                                                    initialScrollIndex={currentSet}
+                                                    keyExtractor={(item, index) => `${index}_${activeDropdown}`}
+                                                    onMomentumScrollEnd={(event) => onScroll(event, index)}
+                                                    keyboardShouldPersistTaps='always'
+                                                    renderItem={({ item, index }) => renderItem({ item, index }, shakeAnimation, animatedColors, scrolling)}
+                                                    horizontal
+                                                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
+                                                    showsHorizontalScrollIndicator={false}
+                                                    pagingEnabled
+                                                    nestedScrollEnabled
+                                                    initialNumToRender={2}
+                                                    maxToRenderPerBatch={2}
+                                                    windowSize={2}
+                                                    decelerationRate={"normal"}
+                                                    disableIntervalMomentum={true}
+                                                />
+                                                : (null)}
+                                            <Indicator scrollX={scrollX} flatListRef={flatListRef} />
+                                        </Animated.View>
+                                    </View>
+                                } />
+                            )
+                        })}
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        ) : null
     )
 }
