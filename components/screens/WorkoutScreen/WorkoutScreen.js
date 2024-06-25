@@ -214,7 +214,7 @@ export default function WorkoutScreen({ navigation }) {
 
                 {!exercises.every(exercise => exercise.complete === true) ?
                     <Animated.View style={{ opacity: animatedFadeIn, flex: 1, justifyContent: 'flex-start' }}>
-                        <ScrollWorkouts {...{ data, exercises, setExercises, notValid, animatedRotations, animatedHeights, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight }} />
+                        <ScrollWorkouts {...{ data, exercises, setExercises, notValid, animatedRotations, animatedHeights, currentWeight, currentReps, activeDropdown, openDropdown, setCurrentReps, setCurrentWeight, setData, setNotValid, closeDropdown, setActiveDropdown, recommendedWeight, updateRecommendedWeight, setRecommendedWeight, selectedProgram }} />
                     </Animated.View> :
                     <View style={{ marginVertical: 30 }}>
                         {currentDay === "Rest" ?

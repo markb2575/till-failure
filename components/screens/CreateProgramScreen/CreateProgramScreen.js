@@ -94,13 +94,26 @@ export default function CreateProgramScreen({ navigation }) {
     const openDropdown = (dropdownIndex) => {
 
         Animated.timing(animatedHeights[dropdownIndex], {
-            toValue: 310,
+            toValue: 100,
             duration: 150,
             useNativeDriver: false,
         }).start();
 
     };
-
+    const handleDayChange = (text, index) => {
+        console.log("in handle text change",text, index)
+        console.log("here1")
+        const updatedProgram = program
+        updatedProgram[index] = text
+        console.log("here2")
+        setProgram(updatedProgram)
+        console.log("here3")
+        // setData()
+        // FileSystemCommands.updateWorkoutFiles()
+        
+        // FileSystemCommands.updateWorkoutFiles(data)
+        // setData(data)
+    }
     return (
         !data || !program ? (null) : (
 
@@ -108,7 +121,7 @@ export default function CreateProgramScreen({ navigation }) {
                 <CustomHeader navigation={navigation} leftNavigate={"Programs"} leftImage={<Image source={require('../../../assets/back.png')} tintColor={'white'} style={{ width: 26, height: 26 }} />} titleText={"Create Program"} />
                 <CustomCard styles={{ padding: 10 }} screen={
                     // <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                    <TextInput style={{ fontSize: 25, padding: 10, color: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
+                    <TextInput style={{ fontSize: 25, padding: 7, color: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
                         placeholder="Enter Program Name"
                         placeholderTextColor="#d3d3d3"
                         value={programName}
@@ -122,15 +135,36 @@ export default function CreateProgramScreen({ navigation }) {
                         style={{ borderRadius: 10, margin: 15, padding: 0 }}
                     >
                         {program[programName] && program[programName].info.map((item, index) => (
+                            
                             <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, padding: 10 }} screen={
-                                <>
+                                <>{console.log(item.day)}
                                     <TouchableOpacity onPress={() => handleToggleDropdown(item, index)} style={{ flexDirection: "row", flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
                                         <View style={{ marginLeft: 15 }}>
-                                            <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', alignSelf: 'center' }}>{item.day}</Text>
+                                            <TextInput
+                                                maxLength={16}
+                                                keyboardType='default'
+                                                style={{
+                                                    color: "white",
+                                                    height: 40,
+                                                    backgroundColor: "transparent",
+                                                    borderColor: 'grey',
+                                                    borderWidth: 2,
+                                                    borderRadius: 8,
+                                                    paddingHorizontal: 70,
+                                                    fontSize: 20,
+
+                                                }}
+                                                placeholderTextColor={"grey"}
+                                                // placeholder={item.recommended_weight !== null ? String(Math.round(item.recommended_weight / 5) * 5) : ""}
+                                                value={item.day}
+                                                onChangeText={(text) => handleDayChange(text, index)}
+                                                // editable={!scrolling && handleEdits(index, exercises[activeDropdown].sets - 1)}
+                                                keyboardAppearance="dark"
+                                            />
                                         </View>
                                         <TouchableOpacity onLongPress={() => deleteDay(index)} style={{ marginRight: 13.5 }}>
                                             <View style={{ padding: 10, borderRadius: 10 }}>
-                                                <Image source={require('../../../assets/trash.png')} style={{ width: 25, height: 30 }} />
+                                                <Image source={require('../../../assets/x.png')} style={{ width: 25, height: 25 }} />
                                             </View>
                                         </TouchableOpacity>
                                     </TouchableOpacity>

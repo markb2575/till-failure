@@ -7,7 +7,7 @@ import CustomCard from '../CustomCard';
 import { ActivityIndicator } from "react-native";
 
 // import Carousel, { Pagination } from 'react-native-snap-carousel';
-export default function ScrollWorkouts({ data, exercises, setExercises, notValid, animatedRotations, animatedHeights, activeDropdown, openDropdown, setData, setNotValid, closeDropdown, setActiveDropdown, updateRecommendedWeight }) {
+export default function ScrollWorkouts({ data, exercises, setExercises, notValid, animatedRotations, animatedHeights, activeDropdown, openDropdown, setData, setNotValid, closeDropdown, setActiveDropdown, updateRecommendedWeight, selectedProgram }) {
     const handleComplete = (animatedColors, shakeAnimation, currentSet) => {
         const isValid = !exercises[activeDropdown].data.some(set => set.weight === null || set.reps === null || Number.isNaN(set.weight));
         if (!isValid) {
@@ -241,7 +241,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                         placeholderTextColor={"grey"}
                         placeholder={item.recommended_weight !== null ? String(Math.round(item.recommended_weight / 5) * 5) : ""}
                         value={String(exercises[activeDropdown].data[index].weight ?? "")}
-                        onChangeText={(text) => handleTextChange(text, type = "Weight", index, currentSet)}
+                        onChangeText={(text) => handleTextChange(text, type = "Weight", index, currentSets.current[activeDropdown])}
                         editable={!scrolling && handleEdits(index, exercises[activeDropdown].sets - 1)}
                         keyboardAppearance="dark"
                     />
@@ -262,7 +262,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                         }}
 
                         value={String(exercises[activeDropdown].data[index].reps ?? "")}
-                        onChangeText={(text) => handleTextChange(text, type = "Reps", index, currentSet)}
+                        onChangeText={(text) => handleTextChange(text, type = "Reps", index, currentSets.current[activeDropdown])}
                         editable={!scrolling && handleEdits(index, exercises[activeDropdown].sets - 1)}
                         keyboardAppearance="dark"
                     />
@@ -346,7 +346,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
         shakeAnimationValues.current = Array.from({ length: exercises.length }, () => new Animated.Value(0))
         currentSets.current = Array.from({ length: exercises.length }, () => 0)
 
-    }, [exercises]);
+    }, [selectedProgram]);
 
     return (
         exercises.length === currentSets.current.length ? (
@@ -366,6 +366,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                             });
 
                             return (
+                                
                                 <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation : '#242424', transform: [{ translateY: shakeAnimation }] }} screen={
                                     <View>
                                         <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
