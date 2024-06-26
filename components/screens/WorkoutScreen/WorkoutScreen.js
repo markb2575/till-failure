@@ -23,7 +23,6 @@ export default function WorkoutScreen({ navigation }) {
     const animatedRotations = useRef(Array.from({ length: 100 }, () => new Animated.Value(1))).current;
 
     const updateRecommendedWeight = (currentWeight, currentReps, optimalReps, index, dropdownIndex) => {
-        // console.log("hi",index)
         if (currentWeight === null || currentReps === null) {
             if (index !== -1) {
                 const maxLen = data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data.length
@@ -45,8 +44,16 @@ export default function WorkoutScreen({ navigation }) {
     }
 
     useFocusEffect(useCallback(() => {
+
         FileSystemCommands.setupProject().then(res => {
             setData(res)
+            if (res.programs[res.state.selectedProgram] === undefined) {
+                res.state.selectedProgram = null
+                FileSystemCommands.updateWorkoutFiles(res).then(res => {
+                    navigation.navigate("Programs")
+                })
+                return
+            }
             if (res.state.selectedProgram === null) {
                     setLoading(false)
                     return null

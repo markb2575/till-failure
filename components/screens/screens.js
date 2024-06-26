@@ -11,5 +11,5 @@ export {
     ProgressScreen,
     CreateProgramScreen,
     SelectExerciseScreen,
-    CreateDayScreen
+    CreateDayScreen,
 }

@@ -370,7 +370,7 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
                                 <CustomCard key={index} styles={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: null, backgroundColor: notValid.includes(index) ? backgroundColorInterpolation : '#242424', transform: [{ translateY: shakeAnimation }] }} screen={
                                     <View>
                                         <TouchableOpacity style={{ padding: 10, opacity: exercise.complete ? 0.2 : 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={() => handleToggleDropdown(exercise, index)} disabled={exercise.complete ? true : false}>
-                                            <View>
+                                            <View style={{maxWidth: '75%'}}>
                                                 <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white', margin: 5 }}>{exercise.name}</Text>
                                                 <Text style={{ fontSize: 20, color: 'grey', margin: 5 }}>{exercise.sets} sets of {exercise.rep_range} Reps</Text>
                                             </View>
