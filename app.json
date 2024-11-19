@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "till-failure",
     "slug": "till-failure",
     "version": "1.0.0",

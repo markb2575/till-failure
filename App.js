@@ -7,9 +7,9 @@ LogBox.ignoreLogs(['Require cycle:']);
 
 export default function App() {
   return (
-    // <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
         <Navigation />
-    // </GestureHandlerRootView>
+    </GestureHandlerRootView>
   );
 }
 

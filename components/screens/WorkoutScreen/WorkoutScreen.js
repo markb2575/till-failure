@@ -28,7 +28,7 @@ export default function WorkoutScreen({ navigation }) {
                 const maxLen = data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data.length
                 if (index + 1 === maxLen) return
                 data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data[index+1].recommended_weight = null
-                
+
             } else {
                 data.programs[data.state.selectedProgram].state.exercises[dropdownIndex].data[index+1].recommended_weight = null
             }
@@ -256,4 +256,5 @@ export default function WorkoutScreen({ navigation }) {
 
         )
         ) : (null));
+
 }

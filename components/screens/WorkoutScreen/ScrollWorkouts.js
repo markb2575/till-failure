@@ -1,6 +1,6 @@
 import FileSystemCommands from "../../util/FileSystemCommands"
 import { useRef, useState, createRef, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Animated, Easing, Keyboard, FlatList, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Animated, Easing, Keyboard, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { Card } from '@rneui/themed';
 import Carousel from 'react-native-reanimated-carousel';
 import CustomCard from '../CustomCard';
@@ -45,11 +45,36 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
         }
         // Keyboard.dismiss()
         exercises[activeDropdown].complete = true;
-        data.workouts.find(exercise => exercise.name === exercises[activeDropdown].name).data = [...exercises[activeDropdown].data];
+        
+        // Debug log to see what we're looking for
+        
+        // Find the index of the workout to update
+        const workoutIndex = data.workouts.findIndex(workout => 
+            workout.name === exercises[activeDropdown].name
+        );
+        
+        // Validate that we found the workout
+        if (workoutIndex === -1) {
+            console.error("Workout not found:", exercises[activeDropdown].name);
+            return;
+        }
+        
+        // Create a new workouts array with the updated data
+        data.workouts[workoutIndex] = {
+            ...data.workouts[workoutIndex],
+            complete: true,
+            data: data.workouts[workoutIndex].data 
+                ? [...data.workouts[workoutIndex].data, ...exercises[activeDropdown].data]
+                : [...exercises[activeDropdown].data],
+            prev_weight: exercises[activeDropdown].prev_weight,
+            prev_reps: exercises[activeDropdown].prev_reps
+        };
+
         FileSystemCommands.updateWorkoutFiles(data);
-        setData(data);
-        closeDropdown(activeDropdown)
+        setData({...data});
+        closeDropdown(activeDropdown);
         setActiveDropdown(null);
+        setSet
     };
 
     const sleep = (ms) => {
@@ -271,31 +296,6 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
         )
     }
 
-
-    // const [currentSets, setCurrentSets] = useState(Array.from({ length: exercises.length }, () => 0));
-
-    // const handleScrollEnd = () => {
-    //     setScrolling(false);
-    // };
-    // const onScroll = (event) => {
-    //     // setScrolling(true)
-    //     const scrollOffset = event.nativeEvent.contentOffset.x
-    //     // console.log(scrollOffset)
-    //     const itemHeight = 327.5; // Replace ITEM_HEIGHT with the actual height of each item
-
-    //     // Calculate the index of the visible item based on the scroll offset and item height
-    //     const visibleItemIndex = Math.round(scrollOffset / itemHeight);
-    //     // console.log("scrollOffset", scrollOffset)
-
-
-    //     // Update currentSets based on the visibleItemIndex
-    //     setCurrentSets(prev => {
-    //         const newSets = [...prev];
-    //         setPrevScrollDirection(visibleItemIndex > newSets[activeDropdown] ? 'right' : visibleItemIndex < newSets[activeDropdown] ? 'left' : null)
-    //         newSets[activeDropdown] = visibleItemIndex;
-    //         return newSets;
-    //     });
-    // };
     const onScroll = (event, index) => {
         // setScrolling(true)
         const scrollOffset = event.nativeEvent.contentOffset.x
@@ -314,24 +314,6 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
 
     const [scrolling, setScrolling] = useState(false);
 
-    // const flatListRef = useRef()
-    // const scrollX = useRef(new Animated.Value(0)).current
-    // const animatedColors = useRef(new Animated.Value(0)).current;
-    // const shakeAnimation = useRef(new Animated.Value(0)).current;
-    // const [currentSet, setCurrentSet] = useState(0);
-    // console.log(exercises.length)
-    // const flatListRefs = Array.from({ length: exercises.length }, () => createRef());
-    // const scrollXValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0))).current;
-    // const animatedColorsValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0))).current;
-    // const shakeAnimationValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0))).current;
-    // const [currentSets, setCurrentSets] = useState(Array.from({ length: exercises.length }, () => 0));
-    // const setCurrentSet = (index, newValue) => {
-    //     setCurrentSets(prevSets => {
-    //         const newSets = [...prevSets];
-    //         newSets[index] = newValue;
-    //         return newSets;
-    //     });
-    // };
     const flatListRefs = useRef(Array.from({ length: exercises.length }, () => null));
     const scrollXValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0)));
     const animatedColorsValues = useRef(Array.from({ length: exercises.length }, () => new Animated.Value(0)));
@@ -350,9 +332,20 @@ export default function ScrollWorkouts({ data, exercises, setExercises, notValid
 
     return (
         exercises.length === currentSets.current.length ? (
-            <KeyboardAvoidingView behavior="position" enabled keyboardVerticalOffset={125}>
-                <ScrollView style={{ borderRadius: 10, marginHorizontal: 15 }} keyboardShouldPersistTaps='always'>
-                    <View style={{ marginBottom: -15 }}>
+            <KeyboardAvoidingView 
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+            >
+                <ScrollView 
+                    style={{ borderRadius: 10, marginHorizontal: 15 }} 
+                    keyboardShouldPersistTaps='always'
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    showsVerticalScrollIndicator={false}
+                    automaticallyAdjustKeyboardInsets={true}
+                    keyboardDismissMode="on-drag"
+                >
+                    <View style={{ marginBottom: Platform.OS === "android" ? 300 : 100 }}>
                         {exercises.sort((a, b) => a.complete - b.complete).map((exercise, index) => {
                             const flatListRef = flatListRefs.current[index]
                             const scrollX = scrollXValues.current[index]
