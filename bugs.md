@@ -1,0 +1,4 @@
+- *Issues*
+    - When there is only one set in an exercise, the recommended weight is not updated.
+    - If there is only one day in a workout, the workout doesn't loop and instead exits.
+    - The graph has no bounds when the weight is the same for all datapoints.

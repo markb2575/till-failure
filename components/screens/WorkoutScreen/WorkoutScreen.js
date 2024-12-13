@@ -23,6 +23,7 @@ export default function WorkoutScreen({ navigation }) {
     const animatedRotations = useRef(Array.from({ length: 100 }, () => new Animated.Value(1))).current;
 
     const updateRecommendedWeight = (currentWeight, currentReps, optimalReps, index, dropdownIndex) => {
+        console.log("Called: updateRecommendedWeight");
         if (currentWeight === null || currentReps === null) {
             if (index !== -1) {
                 const maxLen = data.programs[data.state.selectedProgram].state.exercises[activeDropdown].data.length
@@ -109,6 +110,7 @@ export default function WorkoutScreen({ navigation }) {
 
 
     const closeDropdown = (dropdownIndex) => {
+        console.log("Called: closeDropdown");
         if (dropdownIndex === null) return
         // console.log(animatedHeights[dropdownIndex])
         Animated.timing(animatedHeights[dropdownIndex], {
@@ -123,6 +125,7 @@ export default function WorkoutScreen({ navigation }) {
         }).start();
     };
     const openDropdown = (dropdownIndex, exercise) => {
+        console.log("Called: openDropdown");
         // console.log("exercise", exercise)
         // console.log("in opendropdown")
         Animated.timing(animatedHeights[dropdownIndex], {
@@ -157,6 +160,7 @@ export default function WorkoutScreen({ navigation }) {
     };
     const holdAnimation = useRef(new Animated.Value(0)).current;
     const handleHold = () => {
+        console.log("Called: handleHold");
         Animated.timing(holdAnimation, {
             toValue: 360,
             duration: 600,
@@ -169,6 +173,7 @@ export default function WorkoutScreen({ navigation }) {
         })
     }
     const handleRelease = () => {
+        console.log("Called: handleRelease");
         Animated.timing(holdAnimation, {
             toValue: 0,
             duration: 100,
@@ -178,6 +183,7 @@ export default function WorkoutScreen({ navigation }) {
 
     const animatedFadeIn = useRef(new Animated.Value(0)).current;
     const fadeOut = () => {
+        console.log("Called: fadeOut");
         Animated.timing(animatedFadeIn, {
             toValue: 0,
             duration: 250,
@@ -185,6 +191,7 @@ export default function WorkoutScreen({ navigation }) {
         }).start()
     }
     const fadeIn = () => {
+        console.log("Called: fadeIn");
         Animated.timing(animatedFadeIn, {
             toValue: 1,
             duration: 150,
@@ -194,18 +201,23 @@ export default function WorkoutScreen({ navigation }) {
 
 
     const handleNextDay = () => {
+        console.log("Called: handleNextDay");
         const length = Object.values(data.programs[data.state.selectedProgram].info).length
+        console.log("length", length)
         if (currentDayIndex === length - 1) {
+            console.log("set to day 0")
             setCurrentDay(data.programs[data.state.selectedProgram].info[0].day)
             setCurrentDayIndex(0)
             data.programs[data.state.selectedProgram].state.currentDayIndex = 0
         } else {
+            console.log("set to next day")
             const nextDayIndex = currentDayIndex + 1
             const nextDay = data.programs[data.state.selectedProgram].info[nextDayIndex].day
             setCurrentDay(nextDay)
             setCurrentDayIndex(nextDayIndex)
             data.programs[data.state.selectedProgram].state.currentDayIndex = nextDayIndex
         }
+        console.log("operations")
         data.programs[data.state.selectedProgram].state.exercises = []
         FileSystemCommands.updateWorkoutFiles(data)
         animatedHeights.forEach(animatedHeight => animatedHeight.setValue(0))
